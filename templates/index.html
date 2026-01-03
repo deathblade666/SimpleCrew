@@ -32,12 +32,12 @@
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-dark);
-            font-size: 14px;
+        body { 
+            margin: 0; 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-body); 
+            color: var(--text-dark); 
+            font-size: 14px; 
             overflow-y: hidden; /* Desktop keeps hidden, Mobile will override */
             height: 100vh;
             display: flex;
@@ -45,30 +45,30 @@
         }
 
         /* --- NAV --- */
-        .top-nav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: var(--nav-height);
-            padding: 0 40px;
-            background: #FFF;
-            border-bottom: 1px solid var(--border-color);
-            flex-shrink: 0;
+        .top-nav { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            height: var(--nav-height); 
+            padding: 0 40px; 
+            background: #FFF; 
+            border-bottom: 1px solid var(--border-color); 
+            flex-shrink: 0; 
             z-index: 50;
             position: relative; /* For absolute centering */
         }
         .nav-left, .nav-right { display: flex; align-items: center; gap: 30px; }
         .logo { margin-right: 15px; display: flex; align-items: center; }
         .logo img { height: 22px; display: block; }
-
-        .nav-link {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 500;
-            padding: 21px 0;
-            border-bottom: 2px solid transparent;
-            cursor: pointer;
-            transition: color 0.2s;
+        
+        .nav-link { 
+            text-decoration: none; 
+            color: var(--text-dark); 
+            font-weight: 500; 
+            padding: 21px 0; 
+            border-bottom: 2px solid transparent; 
+            cursor: pointer; 
+            transition: color 0.2s; 
             font-size: 14px;
             display: flex;
             flex-direction: column;
@@ -76,7 +76,7 @@
             justify-content: center;
             gap: 4px;
         }
-
+        
         .nav-link svg {
             display: none; /* Hidden on desktop */
             width: 24px;
@@ -90,56 +90,59 @@
 
         .nav-link:hover { color: var(--simple-blue); }
         .nav-link.active { border-bottom: 2px solid var(--simple-blue); color: var(--text-dark); }
-
+        
         .user-profile { display: flex; align-items: center; gap: 10px; color: var(--text-light); cursor: pointer; }
         .avatar { width: 32px; height: 32px; background: #F5A623; color: #FFF; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
 
         /* --- HEADER --- */
-        .info-header {
-            background: #FAFAFA;
-            padding: 25px 40px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            flex-shrink: 0;
+        .info-header { 
+            background: #FAFAFA; 
+            padding: 25px 40px; 
+            border-bottom: 1px solid var(--border-color); 
+            display: flex; 
+            justify-content: space-between; 
+            flex-shrink: 0; 
             margin-bottom: 0;
         }
         .balance-container h1 { margin: 0; font-size: 32px; font-weight: 600; color: var(--text-dark); display: flex; align-items: baseline; gap: 12px; }
         .sts-label { font-size: 15px; font-weight: 400; color: #999; }
         .math-line { margin-top: 6px; font-size: 13px; color: var(--text-dark); }
         .math-gray { color: #999; }
-        .header-links { display: flex; gap: 30px; align-items: center; }
+        .header-links { display: flex; gap: 30px; align-items: center; } 
         .header-link-group { display: flex; flex-direction: column; }
         .header-link-label { font-size: 12px; color: #999; margin-bottom: 4px; }
         .header-link-action { font-size: 13px; color: var(--link-blue); font-weight: 500; text-decoration: none; }
 
+
+        
         /* --- CONTROLS --- */
-        .controls-bar {
-            padding: 25px 40px 0 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
+        .controls-bar { 
+            padding: 25px 40px 0 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-shrink: 0; 
             margin-bottom: -10px;
         }
+        
         #search-container { display: flex; gap: 10px; width: 60%; transition: opacity 0.2s; }
         .search-input { padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 4px; width: 100%; font-size: 14px; color: #333; }
         .btn { padding: 8px 16px; border-radius: 4px; font-weight: 500; cursor: pointer; font-size: 13px; transition: all 0.2s; }
         .btn-outline { background: #FFF; border: 1px solid var(--border-color); color: var(--text-dark); white-space: nowrap; }
         .btn-outline:hover { border-color: #BBB; }
-
+        
         .btn-move { background: #FFF; border: 1px solid var(--border-color); color: var(--text-dark); display: flex; align-items: center; gap: 8px; padding: 10px 16px; white-space: nowrap; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.05);}
         .btn-move:hover { border-color: #BBB; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
         /* FILTERS */
-        .filters {
-            padding: 0 40px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-shrink: 0;
-            position: relative;
+        .filters { 
+            padding: 0 40px; 
+            margin-bottom: 20px; 
+            display: flex; 
+            gap: 10px; 
+            align-items: center; 
+            flex-shrink: 0; 
+            position: relative; 
             margin-top: 20px;
             z-index: 10;
         }
@@ -166,15 +169,15 @@
         .close-popup:hover { color: #333; }
 
         /* --- GRID --- */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 3fr 1fr;
-            gap: 40px;
-            padding: 0 40px;
-            max-width: 1600px;
+        .main-grid { 
+            display: grid; 
+            grid-template-columns: 3fr 1fr; 
+            gap: 40px; 
+            padding: 0 40px; 
+            max-width: 1600px; 
             /* On desktop, we want the grid to fill remaining height */
             flex: 1;
-            overflow: hidden;
+            overflow: hidden; 
             width: 100%;
             margin-top: 30px;
         }
@@ -195,14 +198,97 @@
 
         .data-container {
             background: #FFF; border: 1px solid var(--border-color); border-top: none; border-radius: 0 0 4px 4px;
-            flex: 1;
-            overflow-y: auto;
-            scrollbar-width: thin;
+            flex: 1; 
+            overflow-y: auto; 
+            scrollbar-width: thin; 
             scrollbar-color: #CCC #F0F0F0;
         }
         .data-container::-webkit-scrollbar { width: 8px; }
         .data-container::-webkit-scrollbar-track { background: #FAFAFA; border-left: 1px solid #EEE; }
         .data-container::-webkit-scrollbar-thumb { background-color: #C1C1C1; border-radius: 4px; border: 2px solid #FAFAFA; }
+
+        /* --- MODERN CARD ROW STYLES --- */
+        .card-row {
+            display: flex;
+            align-items: center;
+            padding: 25px 30px;
+            border-bottom: 1px solid #EAEAEA;
+            background: #FFF;
+            transition: background 0.1s;
+        }
+        .card-row:hover { background: #FAFAFA; }
+        
+        /* Left: Icon & Name */
+        .card-icon {
+            width: 48px;
+            height: 30px;
+            border-radius: 4px;
+            margin-right: 20px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card-icon::after {
+            content:''; position:absolute; top:4px; left:4px; width:8px; height:5px; 
+            background:rgba(255,255,255,0.4); border-radius:1px; 
+        }
+        .card-info { flex: 1; }
+        .card-name { font-weight: 700; font-size: 16px; color: #2C2C2C; margin-bottom: 2px; }
+        .card-meta { font-size: 13px; color: #999; font-weight: 500; }
+
+        /* Right: Controls Area */
+        .card-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .spend-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modern-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-color: #FFF;
+            border: 1px solid #DDD;
+            border-radius: 4px;
+            padding: 8px 32px 8px 12px;
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23999%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px top 50%;
+            background-size: 10px auto;
+            min-width: 140px;
+        }
+        .modern-select:hover { border-color: #BBB; }
+        .modern-select:focus { border-color: var(--simple-blue); outline: none; }
+
+        .type-badge {
+            background: #E3F2FD;
+            color: #1565C0;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 6px 10px;
+            border-radius: 12px;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .card-row { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .card-controls { width: 100%; justify-content: space-between; }
+            .modern-select { flex: 1; }
+        }
+
 
         /* TRANSACTIONS */
         .tx-group-date { font-size: 12px; color: #999; font-weight: 700; background: #FAFAFA; padding: 8px 15px; border-bottom: 1px solid #EEE; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 2; }
@@ -217,7 +303,7 @@
 
         /* EXPENSES & GOALS */
         .exp-summary-bar { font-size: 13px; color: #767676; font-weight: 500; margin-bottom: 15px; text-align: right; }
-
+        
         /* New Expense Hero Card for Mobile */
         .exp-hero-card {
             background: #FFF;
@@ -230,7 +316,7 @@
         }
         .exp-hero-col { display: flex; flex-direction: column; justify-content: center; }
         .exp-hero-col.right { min-width: 90px; }
-
+        
         .exp-hero-divider {
             width: 1px;
             background-color: #E0E0E0;
@@ -275,6 +361,7 @@
             background: #F7FBFF;
         }
 
+
         /* FAMILY TAB */
         .family-section-title { font-size: 14px; font-weight: 700; color: #999; margin: 25px 0 15px 0; text-transform: uppercase; letter-spacing: 0.5px; }
         .family-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
@@ -317,28 +404,28 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(3px); display: none; justify-content: center; align-items: center; z-index: 2100; }
         .modal-content { background: #FFF; width: 450px; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); border: none; overflow: hidden; animation: popIn 0.2s ease-out; max-width: 90vw;}
         /* Animation for Modals (Flex centered) */
-        @keyframes popIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        @keyframes popIn { 
+            from { transform: scale(0.95); opacity: 0; } 
+            to { transform: scale(1); opacity: 1; } 
         }
-
+        
         /* Animation for Fixed/Absolute centered elements (Transform centered) */
-        @keyframes popInCenter {
-            from { transform: translateX(-50%) scale(0.95); opacity: 0; }
-            to { transform: translateX(-50%) scale(1); opacity: 1; }
+        @keyframes popInCenter { 
+            from { transform: translateX(-50%) scale(0.95); opacity: 0; } 
+            to { transform: translateX(-50%) scale(1); opacity: 1; } 
         }
 
         .modal-header { padding: 15px 20px; background: #F8F9FB; border-bottom: 1px solid #EEE; display: flex; justify-content: space-between; align-items: center; }
-
+        
         /* UPDATE: Added Scroll Properties for Mobile Forms */
-        .modal-body {
-            padding: 30px;
+        .modal-body { 
+            padding: 30px; 
             max-height: 70vh; /* Restrict height */
             overflow-y: auto; /* Allow scroll */
             scrollbar-width: thin;
             -webkit-overflow-scrolling: touch; /* Smooth iOS scroll */
         }
-
+        
         .detail-amount { font-size: 36px; font-weight: 700; margin-bottom: 5px; color: #333; letter-spacing: -1px; }
         .detail-title { font-size: 18px; font-weight: 500; color: #555; margin-bottom: 25px; }
         .detail-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; border-bottom: 1px solid #FAFAFA; padding-bottom: 10px; }
@@ -347,18 +434,18 @@
         .detail-val { color: #333; font-weight: 600; }
         .close-btn { cursor: pointer; font-size: 24px; color: #999; line-height: 1; }
         .close-btn:hover { color: #333; }
-
+        
         /* Updated Button Styles for Modal Footer */
-        .btn-goal-add {
-            background: var(--simple-blue);
-            color: #FFF;
-            width: 100%;
-            padding: 14px;
-            border-radius: 6px;
-            border:none;
-            font-weight:600;
-            font-size:15px;
-            cursor: pointer;
+        .btn-goal-add { 
+            background: var(--simple-blue); 
+            color: #FFF; 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 6px; 
+            border:none; 
+            font-weight:600; 
+            font-size:15px; 
+            cursor: pointer; 
             margin-top: 10px; /* Default margin for standard forms */
         }
         .btn-goal-add:hover { background: #007BB5; }
@@ -378,7 +465,7 @@
             transition: all 0.2s;
         }
         .btn-goal-delete:hover {
-            background: #FFF5F5;
+            background: #FFF5F5; 
             border-color: var(--alert-red);
         }
 
@@ -419,7 +506,7 @@
         .form-label { display: block; font-size: 12px; font-weight: 600; color: #777; margin-bottom: 5px; }
         .form-select, .form-input { width: 100%; padding: 10px; border: 1px solid #DDD; border-radius: 4px; font-size: 14px; background: #FFF; }
         .form-select:focus, .form-input:focus { border-color: var(--simple-blue); outline: none; }
-
+        
         /* CHECKBOX & SUBTEXT */
         .checkbox-wrapper { display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .checkbox-input { width: 18px; height: 18px; cursor: pointer; }
@@ -449,7 +536,7 @@
         }
         .pocket-tx-scroll::-webkit-scrollbar { width: 6px; }
         .pocket-tx-scroll::-webkit-scrollbar-thumb { background-color: #DDD; border-radius: 3px; }
-
+        
         .pocket-tx-row {
             display: flex;
             justify-content: space-between;
@@ -471,8 +558,8 @@
             }
 
             body {
-                overflow-y: auto;
-                padding-bottom: var(--bottom-nav-height);
+                overflow-y: auto; 
+                padding-bottom: var(--bottom-nav-height); 
                 height: auto;
                 min-height: 100vh;
                 background-color: #F8F9FB; /* Light gray bg for contrast on mobile */
@@ -485,9 +572,9 @@
                 top: 0;
                 width: 100%;
                 z-index: 900;
-                justify-content: space-between;
+                justify-content: space-between; 
                 /* IMPORTANT: Removed backdrop-filter from parent to allow fixed children */
-                background: #FFFFFF;
+                background: #FFFFFF; 
                 border-bottom: 1px solid rgba(0,0,0,0.05);
             }
 
@@ -540,7 +627,7 @@
                 left: 0;
                 width: 100%;
                 z-index: 1000;
-                background: rgba(255, 255, 255, 0.98);
+                background: rgba(255, 255, 255, 0.98); 
                 backdrop-filter: blur(10px);
                 height: var(--bottom-nav-height);
                 padding-bottom: env(safe-area-inset-bottom);
@@ -560,7 +647,7 @@
                 font-weight: 500;
                 cursor: pointer;
             }
-
+            
             .mobile-nav-link svg {
                 width: 22px;
                 height: 22px;
@@ -609,7 +696,7 @@
             /* HEADER INFO MOBILE OVERRIDES */
             /* Hide the big info header on mobile since we moved it to top nav */
             .info-header {
-                display: none;
+                display: none; 
             }
 
             /* CONTROLS */
@@ -622,7 +709,7 @@
                 border-bottom: 1px solid #EEE;
             }
             #search-container { width: 100%; }
-            .search-input { height: 40px; background: #F4F6F8; border:none; }
+            .search-input { height: 40px; background: #F4F6F8; border:none; } 
             .btn { height: 40px; display: flex; align-items: center; justify-content: center; }
             .btn-outline { background: #FFF; border: 1px solid #DDD; }
             .btn-move { justify-content: center; width: 100%; margin-top: 0; background: #FFF; border: 1px solid #DDD; font-weight: 600; }
@@ -640,7 +727,7 @@
                 margin-top: 0;
             }
             .pill { padding: 6px 14px; font-size: 12px; background: #F0F2F5; }
-
+            
             /* UPDATED MOBILE POPUP STYLE: FIXED POS */
             .filter-popup {
                 position: fixed;
@@ -663,14 +750,14 @@
                 background: #FFF;
                 margin: 0 -15px; /* Bleed to edges */
             }
-
+            
             /* TRANSACTIONS & LISTS */
             /* UPDATED: Removed top margin to remove blank space */
-            .section-header-row {
-                margin: 0 0 10px 0;
-                border: none;
-                padding: 15px 5px 5px 5px;
-                flex-wrap: wrap;
+            .section-header-row { 
+                margin: 0 0 10px 0; 
+                border: none; 
+                padding: 15px 5px 5px 5px; 
+                flex-wrap: wrap; 
             }
             .tab-title { font-size: 16px; font-weight: 800; color: #111; margin-right: 15px; }
             /* Styling for the subtitle on mobile specifically to match screenshot */
@@ -701,7 +788,7 @@
                 padding: 20px;
             }
         }
-
+        
         /* NEW STYLES FOR MOBILE STS DROPDOWN */
         .mobile-sts-dropdown {
             display: none;
@@ -733,7 +820,7 @@
         .mb-math-label { color: #999; font-weight: 500; font-size: 11px; text-transform: uppercase; margin-left: 10px; }
         .header-arrow { font-size: 10px; margin-left: 4px; transition: transform 0.2s; display: inline-block; }
         .mobile-center-header.active .header-arrow { transform: rotate(180deg); }
-
+        
         /* Desktop specific hide */
         @media (min-width: 769px) {
             .mobile-bottom-nav { display: none; }
@@ -782,7 +869,7 @@
                     <label class="form-label">Name</label>
                     <input type="text" id="bill-name" class="form-input" placeholder="e.g. Netflix">
                 </div>
-
+                
                 <div class="form-row-2" style="position:relative; z-index:4;">
                     <div class="form-group" style="flex:1">
                         <label class="form-label">Amount</label>
@@ -854,13 +941,13 @@
                     <label class="form-label">Initial Funding</label>
                     <input type="number" id="pocket-initial" class="form-input" placeholder="0.00">
                     <div id="pocket-funding-hint" class="form-subtext">Safe-to-Spend: $0.00</div>
-                </div>
-
+                </div>                
+                
                 <div class="form-group">
                     <label class="form-label">Goal Amount ($)</label>
                     <input type="number" id="pocket-amount" class="form-input" placeholder="0.00">
                 </div>
-
+                
 
                 <div class="form-group">
                     <label class="form-label">Description (Optional)</label>
@@ -885,7 +972,7 @@
         <div class="mobile-center-header" onclick="toggleMobileStats(event)">
             <div class="mobile-top-label" id="mobile-header-label">Safe-to-Spend®</div>
             <div class="mobile-top-balance" id="mobile-header-balance">$ --.-- <span class="header-arrow">▼</span></div>
-
+            
             <div id="mobile-sts-dropdown" class="mobile-sts-dropdown">
                 <div class="mb-dropdown-row"><span id="mb-math-total">$0.00</span> <span class="mb-math-label">Available</span></div>
                 <div class="mb-dropdown-row minus"><span id="mb-math-bills">-$0.00</span> <span class="mb-math-label">Bills</span></div>
@@ -894,7 +981,13 @@
                 <div class="mb-dropdown-row total"><span id="mb-math-sts">$0.00</span> <span class="mb-math-label">Safe-to-Spend</span></div>
             </div>
         </div>
-
+        <div class="nav-right">
+            <div class="user-profile">
+                <div class="avatar" id="user-avatar">--</div>
+                <span style="font-weight:500;" id="user-name">Loading...</span>
+                <span style="font-size: 10px;">▼</span>
+            </div>
+        </div>
     </nav>
 
     <div class="mobile-bottom-nav">
@@ -917,6 +1010,11 @@
         <div onclick="switchTab('cards')" id="mb-nav-cards" class="mobile-nav-link">
             <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
             <span>Cards</span>
+        </div>
+        
+        <div onclick="openIntercom()" class="mobile-nav-link">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            <span>Help</span>
         </div>
     </div>
 
@@ -1024,7 +1122,7 @@
         // --- TAB SWITCHING ---
         function switchTab(tab) {
             const tabs = ['activity', 'expenses', 'goals', 'family', 'cards'];
-
+            
             // Clear Active Desktop
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
             // Clear Active Mobile
@@ -1035,7 +1133,7 @@
             // Set Desktop Active
             const desktopNav = document.getElementById(`nav-${tab}`);
             if(desktopNav) desktopNav.classList.add('active');
-
+            
             // Set Mobile Active
             const mobileNav = document.getElementById(`mb-nav-${tab}`);
             if(mobileNav) mobileNav.classList.add('active');
@@ -1065,45 +1163,63 @@
             // This ensures data is fresh when navigating
             if(tab === 'expenses') loadExpenses(true);
             if(tab === 'goals') loadGoals(true);
-
+            
             if(tab === 'family') loadFamily();
-            if(tab === 'cards') loadCards();
+            if(tab === 'cards') loadCards(true);
         }
 
         // --- CARDS LOGIC ---
-        function loadCards() {
-            fetch('/api/cards').then(res => res.json()).then(data => {
+        function loadCards(forceRefresh = false) {
+            // If forceRefresh is true, append the query param to bypass cache
+            const url = forceRefresh ? '/api/cards?refresh=true' : '/api/cards';
+            
+            fetch(url).then(res => res.json()).then(data => {
                 const container = document.getElementById('cards-content');
-                if(data.error) { container.innerHTML = `<div style="text-align:center; padding:20px; color:red;">${data.error}</div>`; return; }
+                if(data.error) { 
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:red;">${data.error}</div>`; 
+                    return; 
+                }
 
                 let html = '';
                 if(data.cards.length === 0) {
-                    html = '<div style="text-align:center; padding:40px; color:#999;">No cards found.</div>';
+                    html = '<div style="text-align:center; padding:40px; color:#999;">No physical cards found.</div>';
                 } else {
                     data.cards.forEach(card => {
                         const bg = cardColors[card.color] || '#333';
-                        const isActive = card.status === 'ACTIVATED';
-                        const statusClass = isActive ? 'status-active' : 'status-inactive';
-                        const typeClass = card.type === 'Physical' ? 'type-phys' : 'type-virt';
-                        const statusText = isActive ? 'Active' : (card.status === 'DEACTIVATED' ? 'Inactive' : card.status);
-                        const limitText = card.limit ? ` • Limit: ${card.limit}` : '';
+                        
+                        let optionsHtml = `<option value="Checking" ${card.current_spend_id === 'Checking' ? 'selected' : ''}>Checking</option>`;
+                        
+                        if (typeof goalsDataStore !== 'undefined') {
+                            goalsDataStore.forEach(goal => {
+                                const isSelected = card.current_spend_id === goal.id ? 'selected' : '';
+                                optionsHtml += `<option value="${goal.id}" ${isSelected}>${goal.name}</option>`;
+                            });
+                        }
+
 
                         html += `
                         <div class="card-row">
                             <div class="card-icon" style="background-color: ${bg};"></div>
                             <div class="card-info">
-                                <div class="card-name">${card.name} <span style="font-weight:400; color:#999;">(..${card.lastFour || '????'})</span></div>
-                                <div class="card-meta">Holder: ${card.holder}${limitText}</div>
+                                <div class="card-name">${card.holder}</div>
+                                <div class="card-meta">Simple Visa® Card • ..${card.last4}</div>
                             </div>
-                            <span class="card-type-badge ${typeClass}">${card.type}</span>
-                            <span class="card-status ${statusClass}">${statusText}</span>
+                            <div class="card-controls">
+                                <span class="spend-label">Spend From:</span>
+                                
+                                <select class="modern-select" 
+                                        onclick="event.stopPropagation()" 
+                                        onchange="updateSpendPocket(this, '${card.userId}')"> ${optionsHtml}
+                                </select>
+                                
+                                <span class="type-badge">Physical</span>
+                            </div>
                         </div>`;
                     });
                 }
                 container.innerHTML = html;
             });
         }
-
         // --- FILTER & SEARCH ---
         let filterState = { q: '', minDate: '', maxDate: '', minAmt: '', maxAmt: '' };
         document.getElementById('search-input-box').addEventListener('input', (e) => { filterState.q = e.target.value; reloadTx(); });
@@ -1112,9 +1228,9 @@
         function applyFilters() { filterState.minDate = document.getElementById('filter-min-date').value; filterState.maxDate = document.getElementById('filter-max-date').value; filterState.minAmt = document.getElementById('filter-min-amt').value; filterState.maxAmt = document.getElementById('filter-max-amt').value; updatePills(); reloadTx(); toggleFilterMenu(); }
         function updatePills() { const container = document.getElementById('active-filters'); container.innerHTML = ''; if (!filterState.minDate && !filterState.maxDate && !filterState.minAmt && !filterState.maxAmt) { container.innerHTML = `<div class="pill" onclick="removeFilter('date')">Last 6 months <span class="pill-remove">×</span></div>`; return; } if(filterState.minDate || filterState.maxDate) { container.innerHTML += `<div class="pill" onclick="removeFilter('date')">${filterState.minDate || '...'} to ${filterState.maxDate || '...'} <span class="pill-remove">×</span></div>`; } if(filterState.minAmt || filterState.maxAmt) { container.innerHTML += `<div class="pill" onclick="removeFilter('amt')">$${filterState.minAmt || '0'} - $${filterState.maxAmt || '∞'} <span class="pill-remove">×</span></div>`; } }
         function removeFilter(type) { if(type === 'date') { filterState.minDate = ''; filterState.maxDate = ''; document.getElementById('filter-min-date').value = ''; document.getElementById('filter-max-date').value = ''; } if(type === 'amt') { filterState.minAmt = ''; filterState.maxAmt = ''; document.getElementById('filter-min-amt').value = ''; document.getElementById('filter-max-amt').value = ''; } updatePills(); reloadTx(); }
-
+        
         // --- DYNAMIC SEARCH FOR BILL IDENTIFICATION (REPLACED DATALIST) ---
-
+        
         // 1. Debounce utility to prevent spamming the API while typing
         function debounce(func, wait) {
             let timeout;
@@ -1129,7 +1245,7 @@
         const performBillSearch = debounce(function(evt) {
             const query = evt.target.value;
             const suggestionBox = document.getElementById('suggestion-box');
-
+            
             // Clear if empty or short
             if(query.length < 2) {
                 suggestionBox.style.display = 'none';
@@ -1141,11 +1257,11 @@
                 .then(res => res.json())
                 .then(data => {
                     suggestionBox.innerHTML = ''; // Clear previous results
-
+                    
                     if(data.transactions && data.transactions.length > 0) {
                         // Filter for unique titles to avoid duplicates in the dropdown
                         const uniqueTitles = [...new Set(data.transactions.map(t => t.title))];
-
+                        
                         uniqueTitles.forEach(title => {
                             const div = document.createElement('div');
                             div.className = 'suggestion-item';
@@ -1157,7 +1273,7 @@
                             };
                             suggestionBox.appendChild(div);
                         });
-
+                        
                         // Show the box
                         suggestionBox.style.display = 'block';
                     } else {
@@ -1175,7 +1291,7 @@
         if(billSearchInput) {
             billSearchInput.addEventListener('input', performBillSearch);
         }
-
+        
         // 4. Close suggestions when clicking elsewhere
         document.addEventListener('click', function(e) {
             const suggestionBox = document.getElementById('suggestion-box');
@@ -1193,9 +1309,9 @@
                 loader.style.display = 'none';
                 if(data.error || !data.transactions || data.transactions.length === 0) { content.innerHTML = `<div style="text-align:center; padding:40px; color:#999;">No transactions found.</div>`; return; }
                 const grouped = {};
-
+                
                 // Also populate Search suggestions for Bills from initial load if needed, but dynamic is better
-
+                
                 data.transactions.forEach(tx => { const dateStr = new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); if(!grouped[dateStr]) grouped[dateStr] = []; grouped[dateStr].push(tx); });
                 let html = '';
                 for (const [date, txs] of Object.entries(grouped)) {
@@ -1220,7 +1336,7 @@
             document.getElementById('math-sched').innerText = fmt(billReserved);
             document.getElementById('math-goals').innerText = fmt(currentBalances.savings);
             document.getElementById('sts-balance').innerText = fmt(currentBalances.checking);
-
+            
             // Mobile Update - Always shows checking/safe-to-spend
             if (document.getElementById('mobile-header-balance')) {
                 // Keep the arrow span when updating text
@@ -1239,13 +1355,13 @@
                 if(data.error) return;
                 updateAllMath(data.summary.totalReserved || 0);
                 expensesDataStore = data.expenses;
-
+                
                 // Store the source for later use in Delete Logic
                 currentFundingSource = data.summary.fundingSource || "Checking";
-
+                
                 const nextDate = new Date(data.summary.nextFundingDate).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'});
                 const summaryText = `Next Funding: ${nextDate} • Estimated ${fmt(data.summary.estimatedFunding)}`;
-
+                
                 document.getElementById('exp-summary-text').innerText = summaryText;
 
                 const heroHtml = `
@@ -1278,6 +1394,99 @@
             });
         }
 
+        function loadUserProfile() {
+            fetch('/api/user')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) return;
+
+                    const first = data.firstName || "";
+                    const last = data.lastName || "";
+                    const imgUrl = data.imageUrl;
+                    
+                    // Update Name
+                    const fullName = `${first} ${last}`;
+                    const nameEl = document.getElementById('user-name');
+                    if(nameEl) nameEl.innerText = fullName;
+
+                    const avatarEl = document.getElementById('user-avatar');
+                    if (!avatarEl) return;
+
+                    if (imgUrl) {
+                        // 1. If Image URL exists, inject an IMG tag
+                        // We set background to transparent to hide the default orange color
+                        avatarEl.style.background = 'transparent';
+                        avatarEl.innerHTML = `<img src="${imgUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover; display:block;">`;
+                    } else {
+                        // 2. Fallback to Initials if no image found
+                        let initials = "";
+                        if (first.length > 0) initials += first[0];
+                        if (last.length > 0) initials += last[0];
+                        
+                        // Reset style to default orange background (defined in CSS)
+                        avatarEl.style.background = ''; 
+                        avatarEl.innerText = initials.toUpperCase();
+                    }
+                })
+                .catch(err => console.error("Failed to load user profile", err));
+        }
+
+        function openIntercom() {
+            if (window.Intercom) {
+                window.Intercom('show');
+            } else {
+                console.log("Intercom not ready yet");
+            }
+        }
+
+
+        function updateSpendPocket(selectElement, userId) {
+            const selectedPocketId = selectElement.value;
+            
+            // UI Feedback: Disable select temporarily
+            selectElement.disabled = true;
+            selectElement.style.opacity = "0.6";
+
+            // We send just the IDs to Python; Python handles the complex GraphQL
+            const payload = {
+                userId: userId,
+                pocketId: selectedPocketId
+            };
+
+            // UPDATED: Point to the specific Python route, not /api/graphql
+            fetch('/api/set-card-spend', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Re-enable control
+                selectElement.disabled = false;
+                selectElement.style.opacity = "1";
+
+                if (data.error) {
+                    alert("Failed to update: " + data.error);
+                    // Optional: Reload cards to reset the dropdown to the server state
+                    loadCards(true); 
+                } else {
+                    console.log("Spend pocket updated successfully", data);
+                    
+                    // Visual confirmation (flash green border)
+                    selectElement.style.borderColor = "#63BB67";
+                    setTimeout(() => selectElement.style.borderColor = "#DDD", 1000);
+                }
+            })
+            .catch(err => {
+                console.error("Error updating spend pocket", err);
+                selectElement.disabled = false;
+                selectElement.style.opacity = "1";
+                alert("Network error occurred.");
+            });
+        }
+        
         // --- GOALS ---
         function loadGoals(forceRefresh = false) {
             const url = forceRefresh ? '/api/goals?refresh=true' : '/api/goals';
@@ -1291,12 +1500,12 @@
 
                 data.goals.forEach((g, index) => {
                     let pct = g.target > 0 ? Math.min((g.balance / g.target) * 100, 100) : 0;
-
+                    
                     // Logic to handle empty goal (Pocket without target)
                     const hasGoal = g.target > 0;
                     const progressHtml = hasGoal
                         ? `<div class="exp-progress-container"><div class="exp-progress-bar" style="width: ${pct}%"></div></div>`
-                        : '';
+                        : ''; 
                     const detailsText = hasGoal
                         ? `<span>${fmt(g.balance)} of ${fmt(g.target)} saved</span>`
                         : `<span>${fmt(g.balance)} saved</span>`;
@@ -1321,12 +1530,12 @@
                 data.goals.forEach((g, index) => {
                     let pct = g.target > 0 ? Math.min((g.balance / g.target) * 100, 100) : 0;
                     const hasGoal = g.target > 0;
-
+                    
                     // Sidebar specific logic for no-goal pockets
                     const detailsText = hasGoal
                         ? `<span>${fmt(g.balance)}</span><span>of ${fmt(g.target)}</span>`
                         : `<span>${fmt(g.balance)}</span><span>Saved</span>`;
-
+                    
                     const barHtml = hasGoal
                         ? `<div class="goal-bar-bg"><div class="goal-bar-fill" style="width:${pct}%"></div></div>`
                         : '';
@@ -1376,13 +1585,13 @@
 
         function loadTrends() { fetch('/api/trends').then(res => res.json()).then(data => { if(data.error) return; document.getElementById('trend-earned').innerText = fmt(data.earned); document.getElementById('trend-spent').innerText = fmt(data.spent); }); }
 
-        function openExpenseDetail(index) {
-            const e = expensesDataStore[index];
-            const modal = document.getElementById('tx-modal');
-            modal.style.display = 'flex';
-            document.getElementById('modal-title-text').innerText = "Expense Details";
-            const pct = e.amount > 0 ? ((e.reserved / e.amount) * 100).toFixed(0) : 0;
-
+        function openExpenseDetail(index) { 
+            const e = expensesDataStore[index]; 
+            const modal = document.getElementById('tx-modal'); 
+            modal.style.display = 'flex'; 
+            document.getElementById('modal-title-text').innerText = "Expense Details"; 
+            const pct = e.amount > 0 ? ((e.reserved / e.amount) * 100).toFixed(0) : 0; 
+            
             const safeName = e.name.replace(/'/g, "\\'");
 
             document.getElementById('modal-body-content').innerHTML = `
@@ -1395,14 +1604,14 @@
                         <div class="detail-row"><span>Progress</span><span>${pct}%</span></div>
                         <div class="detail-row"><span>Next Funding</span><span>${fmt(e.estimatedFunding)}</span></div>
                     </div>
-
+                    
                     <button class="btn-goal-delete" onclick="deleteBill('${e.id}', '${safeName}', ${e.reserved})">Delete Expense</button>
-                </div>`;
+                </div>`; 
         }
 
         function deleteBill(id, name, reservedAmount) {
             let msg = `Are you sure you want to delete "${name}"?`;
-
+            
             // Logic: Checking -> Safe-to-Spend, anything else -> displayName
             const destinationName = (currentFundingSource === "Checking") ? "Safe-to-Spend" : currentFundingSource;
 
@@ -1439,7 +1648,7 @@
                     }
                 } else {
                     closeModal();
-                    loadExpenses(true);
+                    loadExpenses(true); 
                 }
             })
             .catch(err => {
@@ -1447,18 +1656,18 @@
                 if(btn) btn.disabled = false;
             });
         }
-
+        
         // --- UPDATED GOAL DETAIL (Pockets) with SIDE-BY-SIDE BUTTONS ---
-        function openGoalDetailList(index) {
+        function openGoalDetailList(index) { 
             const g = goalsDataStore[index];
-            const modal = document.getElementById('tx-modal');
-            modal.style.display = 'flex';
-            document.getElementById('modal-title-text').innerText = "Pocket Activity";
+            const modal = document.getElementById('tx-modal'); 
+            modal.style.display = 'flex'; 
+            document.getElementById('modal-title-text').innerText = "Pocket Activity"; 
             const body = document.getElementById('modal-body-content');
-
+            
             // Set initial layout while loading
             const targetText = g.target > 0 ? `Saved of ${fmt(g.target)}` : 'Total Saved';
-
+            
             body.innerHTML = `
                 <div class="pocket-header">
                     <div class="pocket-balance">${fmt(g.balance)}</div>
@@ -1467,7 +1676,7 @@
                 <div class="pocket-tx-scroll" id="pocket-tx-list">
                     <div style="text-align:center; padding:20px; color:#999;">Loading activity...</div>
                 </div>
-
+                
                 <div style="margin-top: 20px; display: flex; flex-direction: row; gap: 15px;">
                     <button class="btn-goal-add" style="flex:1; margin:0;" onclick="openMoveModal('${g.id}')">Add Funds</button>
                     <button class="btn-goal-delete" style="flex:1; margin:0;" onclick="deletePocket('${g.id}', '${g.name.replace(/'/g, "\\'")}')">Delete Pocket</button>
@@ -1481,9 +1690,9 @@
                     listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:red;">Error loading</div>';
                     return;
                 }
-
+                
                 const pocketTxs = data.transactions.filter(t => t.subaccountId === g.id);
-
+                
                 if(pocketTxs.length === 0) {
                     listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">No recent activity</div>';
                 } else {
@@ -1492,7 +1701,7 @@
                         const date = new Date(tx.date).toLocaleDateString(undefined, {month:'short', day:'numeric'});
                         const amtClass = tx.amount > 0 ? 'tx-pos' : 'tx-neg';
                         const sign = tx.amount > 0 ? '+' : '';
-
+                        
                         html += `
                         <div class="pocket-tx-row">
                             <div class="pocket-tx-date">${date}</div>
@@ -1562,31 +1771,31 @@
             openGoalDetailList(index);
         }
         function openTxDetail(id) { const modal = document.getElementById('tx-modal'); modal.style.display = 'flex'; document.getElementById('modal-title-text').innerText = "Transaction Details"; document.getElementById('modal-body-content').innerHTML = 'Loading...'; fetch(`/api/transaction/${encodeURIComponent(id)}`).then(res=>res.json()).then(data => { document.getElementById('modal-body-content').innerHTML = `<div style="text-align:center; margin-bottom: 20px;"><div class="detail-amount">${fmt(data.amount)}</div><div style="font-size:16px;">${data.title}</div></div><div style="text-align:left;"><div class="detail-row"><span>Date</span><span>${new Date(data.date).toLocaleDateString()}</span></div><div class="detail-row"><span>Status</span><span>${data.status}</span></div></div>`; }); }
-
+        
         function closeModal(e) { document.getElementById('tx-modal').style.display = 'none'; }
-
+        
         // --- MOVE MONEY MODAL ---
-        function openMoveModal(preFillToId = null) {
+        function openMoveModal(preFillToId = null) { 
             // Close other modals if open (like the pocket detail modal)
             document.getElementById('tx-modal').style.display = 'none';
-
-            document.getElementById('move-modal').style.display = 'flex';
-            document.getElementById('move-message').innerHTML = '';
-
+            
+            document.getElementById('move-modal').style.display = 'flex'; 
+            document.getElementById('move-message').innerHTML = ''; 
+            
             // ALWAYS REFRESH
-            fetch('/api/subaccounts?refresh=true').then(res=>res.json()).then(data => {
-                if(data.error) return;
-
+            fetch('/api/subaccounts?refresh=true').then(res=>res.json()).then(data => { 
+                if(data.error) return; 
+                
                 // Store account data globally for validation logic
-                moveMoneyAccounts = data.subaccounts;
-
-                const opts = data.subaccounts.map(acc => `<option value="${acc.id}">${acc.name} (${fmt(acc.balance)})</option>`).join('');
+                moveMoneyAccounts = data.subaccounts; 
+                
+                const opts = data.subaccounts.map(acc => `<option value="${acc.id}">${acc.name} (${fmt(acc.balance)})</option>`).join(''); 
                 const fromSelect = document.getElementById('move-from');
                 const toSelect = document.getElementById('move-to');
-
-                fromSelect.innerHTML = opts;
-                toSelect.innerHTML = opts;
-
+                
+                fromSelect.innerHTML = opts; 
+                toSelect.innerHTML = opts; 
+                
                 // Logic to pre-fill destination if provided
                 if(preFillToId) {
                     toSelect.value = preFillToId;
@@ -1595,15 +1804,15 @@
                          fromSelect.selectedIndex = (fromSelect.selectedIndex + 1) % fromSelect.options.length;
                     }
                 }
-            });
+            }); 
         }
 
         function closeMoveModal() { document.getElementById('move-modal').style.display = 'none'; }
-
-        function executeTransfer() {
-            const btn = document.querySelector('#move-modal .btn-goal-add');
-            const msg = document.getElementById('move-message');
-
+        
+        function executeTransfer() { 
+            const btn = document.querySelector('#move-modal .btn-goal-add'); 
+            const msg = document.getElementById('move-message'); 
+            
             const fromId = document.getElementById('move-from').value;
             const toId = document.getElementById('move-to').value;
             const amount = parseFloat(document.getElementById('move-amount').value);
@@ -1627,42 +1836,42 @@
             }
             // --- VALIDATION END ---
 
-            btn.disabled = true;
-            btn.innerText = "Processing...";
-
-            const payload = { fromId, toId, amount, note };
-
-            fetch('/api/move-money', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            }).then(res=>res.json()).then(data => {
-                btn.disabled = false;
-                btn.innerText = "Transfer Funds";
-                if(data.error) {
-                    msg.innerHTML = `<div style="color:var(--alert-red); margin-bottom:10px;">${data.error}</div>`;
-                } else {
-                    msg.innerHTML = `<div style="color:green; margin-bottom:10px;">Success!</div>`;
-                    setTimeout(() => {
-                        closeMoveModal();
-                        initBalances();
-                        reloadTx();
-                        loadSidebarPockets(true);
-
+            btn.disabled = true; 
+            btn.innerText = "Processing..."; 
+            
+            const payload = { fromId, toId, amount, note }; 
+            
+            fetch('/api/move-money', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify(payload) 
+            }).then(res=>res.json()).then(data => { 
+                btn.disabled = false; 
+                btn.innerText = "Transfer Funds"; 
+                if(data.error) { 
+                    msg.innerHTML = `<div style="color:var(--alert-red); margin-bottom:10px;">${data.error}</div>`; 
+                } else { 
+                    msg.innerHTML = `<div style="color:green; margin-bottom:10px;">Success!</div>`; 
+                    setTimeout(() => { 
+                        closeMoveModal(); 
+                        initBalances(); 
+                        reloadTx(); 
+                        loadSidebarPockets(true); 
+                        
                         // Also refresh current view
                         if(document.getElementById('view-expenses').classList.contains('active')) loadExpenses(true);
                         if(document.getElementById('view-goals').classList.contains('active')) loadGoals(true);
 
-                    }, 1500);
-                }
-            });
+                    }, 1500); 
+                } 
+            }); 
         }
 
         // --- NEW: ADD BILL LOGIC ---
         function openBillModal() {
             document.getElementById('bill-modal').style.display = 'flex';
             document.getElementById('bill-message').innerHTML = '';
-
+            
             // Populate Days (1-31)
             const daySelect = document.getElementById('bill-day');
             daySelect.innerHTML = '';
@@ -1680,13 +1889,13 @@
             const btn = document.querySelector('#bill-modal .btn-goal-add');
             const msg = document.getElementById('bill-message');
             const modalBody = document.querySelector('#bill-modal .modal-body');
-
+            
             // 1. Gather Inputs
             const name = document.getElementById('bill-name').value;
             const amount = document.getElementById('bill-amount').value;
             const frequency = document.getElementById('bill-freq').value;
             const dayOfMonth = document.getElementById('bill-day').value;
-
+            
             // Optional / Advanced Inputs
             const matchString = document.getElementById('bill-id-search').value;
             const minAmount = document.getElementById('bill-min').value;
@@ -1698,7 +1907,7 @@
                 msg.innerHTML = `<div style="color:var(--alert-red); margin-bottom:10px;">Please enter name and amount.</div>`;
                 return;
             }
-
+            
             if(!dayOfMonth) {
                 msg.innerHTML = `<div style="color:var(--alert-red); margin-bottom:10px;">Please select a day of the month.</div>`;
                 return;
@@ -1737,7 +1946,7 @@
                         const res = data.result;
                         const reservedCents = res.reservedAmount || 0;
                         const reservedAmt = reservedCents / 100.0;
-
+                        
                         // Use the simplified name we injected from the Python backend
                         const accountName = res.fundingDisplayName || "Checking";
 
@@ -1746,12 +1955,12 @@
                             <div style="text-align:center; padding: 20px 0;">
                                 <div style="font-size: 40px; margin-bottom: 10px;">🎉</div>
                                 <div style="font-size: 18px; font-weight: 700; color: #2C2C2C; margin-bottom: 15px;">Bill Created Successfully</div>
-
+                                
                                 <div style="background: #F8F9FB; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: left; border: 1px solid #EEE;">
                                     <div style="font-size: 14px; line-height: 1.5; color: #555;">
-                                        To ensure <strong>${name}</strong> is fully caught up and aligned with your funding schedule,
-                                        <span style="color: #2C2C2C; font-weight: 700;">${fmt(reservedAmt)}</span>
-                                        has been automatically reserved from your
+                                        To ensure <strong>${name}</strong> is fully caught up and aligned with your funding schedule, 
+                                        <span style="color: #2C2C2C; font-weight: 700;">${fmt(reservedAmt)}</span> 
+                                        has been automatically reserved from your 
                                         <span style="color: #2C2C2C; font-weight: 700;">${accountName}</span> account.
                                     </div>
                                 </div>
@@ -1791,29 +2000,29 @@
             document.getElementById('pocket-amount').value = '';
             document.getElementById('pocket-initial').value = '';
             document.getElementById('pocket-desc').value = '';
-
+            
             // Initial hint update
             const avail = currentBalances.checking;
             document.getElementById('pocket-funding-hint').innerText = `Safe-to-Spend: ${fmt(avail)}`;
         }
 
         function closePocketModal(e) { document.getElementById('pocket-modal').style.display = 'none'; }
-
+        
 function savePocket() {
             const btn = document.querySelector('#pocket-modal .btn-goal-add');
             const msg = document.getElementById('pocket-message');
-
+            
             const name = document.getElementById('pocket-name').value;
             const amount = document.getElementById('pocket-amount').value;
             const initial = document.getElementById('pocket-initial').value || 0;
             const note = document.getElementById('pocket-desc').value || "";
-
+            
             // Validation
             if(!name || !amount) {
                 msg.innerHTML = `<div style="color:var(--alert-red); margin-bottom:10px;">Please enter name and goal amount.</div>`;
                 return;
             }
-
+            
             const avail = currentBalances.checking;
             if (parseFloat(initial) > avail) {
                 msg.innerHTML = `<div style="color:var(--alert-red); margin-bottom:10px;">Initial funding cannot exceed Safe-to-Spend balance (${fmt(avail)}).</div>`;
@@ -1824,11 +2033,11 @@ function savePocket() {
             btn.innerText = "Creating Pocket...";
 
             // Payload matches the arguments expected by the Python route
-            const payload = {
-                name: name,
-                amount: amount,
-                initial: initial,
-                note: note
+            const payload = { 
+                name: name, 
+                amount: amount, 
+                initial: initial, 
+                note: note 
             };
 
             fetch('/api/create-pocket', {
@@ -1845,14 +2054,14 @@ function savePocket() {
                     msg.innerHTML = `<div style="color:var(--alert-red); margin-bottom:10px;">${data.error}</div>`;
                 } else {
                     msg.innerHTML = `<div style="color:green; margin-bottom:10px;">Success! Pocket Created.</div>`;
-
+                    
                     setTimeout(() => {
                         closePocketModal();
                         // Force refresh goals and sidebar to show the new pocket
-                        loadGoals(true);
+                        loadGoals(true); 
                         loadSidebarPockets(true);
                         // Refresh balance math in case money was moved
-                        initBalances();
+                        initBalances(); 
                     }, 1000);
                 }
             })
@@ -1868,10 +2077,10 @@ function savePocket() {
             e.stopPropagation(); // Prevent document click from closing immediately
             const header = document.querySelector('.mobile-center-header');
             const dropdown = document.getElementById('mobile-sts-dropdown');
-
+            
             // Toggle class
             const isShowing = dropdown.classList.contains('show');
-
+            
             if (isShowing) {
                 dropdown.classList.remove('show');
                 header.classList.remove('active');
@@ -1881,7 +2090,7 @@ function savePocket() {
                 document.getElementById('mb-math-bills').innerText = "-" + document.getElementById('math-sched').innerText;
                 document.getElementById('mb-math-goals').innerText = "-" + document.getElementById('math-goals').innerText;
                 document.getElementById('mb-math-sts').innerText = document.getElementById('sts-balance').innerText;
-
+                
                 dropdown.classList.add('show');
                 header.classList.add('active');
             }
@@ -1921,8 +2130,52 @@ function savePocket() {
             });
         }
 
+        // --- INTERCOM INTEGRATION ---
+        
+        // --- INTERCOM INTEGRATION ---
+        
+        // 1. Standard Intercom Install Snippet
+        (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/c7bal0a1';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
+
+        function loadIntercom() {
+            fetch('/api/intercom')
+                .then(res => res.json())
+                .then(data => {
+                    if(data.error) {
+                        console.log("Intercom skipped: " + data.error);
+                        return;
+                    }
+
+                    const userData = data.user_data;
+
+                    // Prepare Settings
+                    // Inside your loadIntercom() function...
+
+                    window.intercomSettings = {
+                        api_base: "https://api-iam.intercom.io",
+                        app_id: "c7bal0a1",
+                        
+                        user_id: userData.user_id,
+                        intercom_user_jwt: userData.intercom_user_jwt,
+                        
+                        // NEW: Hide the bubble automatically if on mobile
+                        hide_default_launcher: window.innerWidth <= 768, 
+
+                        launcher_logo_url: "https://media.licdn.com/dms/image/v2/D560BAQEroTqp4W9tBg/company-logo_200_200/company-logo_200_200/0/1686260003377/trycrew_logo?e=2147483647&v=beta&t=AFyDbpJ8X-2MB86GkQo9MmPMZGLuUp-FMu-BDHH5hvM"
+                    };
+
+                    // Initialize the Messenger
+                    if (window.Intercom) {
+                        window.Intercom('boot', window.intercomSettings);
+                    }
+                })
+                .catch(err => console.error("Intercom fetch failed", err));
+        }
+
+
         // Start with forced refresh on pockets to ensure sidebar is accurate
-        initBalances(); reloadTx(); loadTrends(); loadSidebarPockets(true);
+        initBalances(); reloadTx(); loadTrends(); loadSidebarPockets(true); loadUserProfile(); loadIntercom(); loadCards(true);
+
     </script>
 </body>
 </html>

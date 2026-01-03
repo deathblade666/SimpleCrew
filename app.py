@@ -44,16 +44,16 @@ def cached(key_prefix):
             force_refresh = kwargs.pop('force_refresh', False)
             key_parts = [key_prefix] + [str(arg) for arg in args] + [f"{k}={v}" for k, v in kwargs.items()]
             cache_key = ":".join(key_parts)
-
+            
             if not force_refresh:
                 cached_data = cache.get(cache_key)
                 if cached_data:
                     print(f"⚡ Serving {key_prefix} from cache")
                     return cached_data
-
+            
             print(f"🌐 Fetching {key_prefix} from API (Fresh)...")
             result = func(*args, **kwargs)
-
+            
             if isinstance(result, dict) and "error" not in result:
                 cache.set(cache_key, result)
             return result
@@ -208,6 +208,80 @@ def get_transactions_data(search_term=None, min_date=None, max_date=None, min_am
     except Exception as e:
         return {"error": str(e)}
 
+@cached("user_profile_info")
+def get_user_profile_info():
+    try:
+        headers = get_crew_headers()
+        if not headers: return {"error": "Credentials not found"}
+        
+        # Updated Query to include imageUrl
+        query_string = """ 
+        query CurrentUser { 
+            currentUser { 
+                firstName 
+                lastName
+                imageUrl
+            } 
+        } 
+        """
+        
+        response = requests.post(URL, headers=headers, json={
+            "operationName": "CurrentUser", 
+            "query": query_string
+        })
+        
+        data = response.json()
+        user = data.get("data", {}).get("currentUser", {})
+        
+        return {
+            "firstName": user.get("firstName", ""),
+            "lastName": user.get("lastName", ""),
+            "imageUrl": user.get("imageUrl") # Can be None or a URL string
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@cached("intercom_data")
+def get_intercom_data():
+    try:
+        headers = get_crew_headers()
+        if not headers: return {"error": "Credentials not found"}
+        
+        # GraphQL Query
+        query_string = """
+        query IntercomToken($platform: IntercomPlatform!) {
+          currentUser {
+            id
+            intercomJwt(platform: $platform)
+          }
+        }
+        """
+        
+        variables = {"platform": "WEB"}
+        
+        response = requests.post(URL, headers=headers, json={
+            "operationName": "IntercomToken",
+            "variables": variables,
+            "query": query_string
+        })
+        
+        data = response.json()
+        user = data.get("data", {}).get("currentUser", {})
+        
+        if not user:
+            return {"error": "User data not found"}
+
+        # Return the exact keys requested
+        return {
+            "user_data": {
+                "user_id": user.get("id"),
+                "intercom_user_jwt": user.get("intercomJwt")
+            }
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 @cached("tx_detail")
 def get_transaction_detail(activity_id):
     try:
@@ -229,51 +303,51 @@ def get_expenses_data():
     try:
         headers = get_crew_headers()
         if not headers: return {"error": "Credentials not found"}
-
+        
         # Updated query to include funding settings
-        query_string = """
-        query CurrentUser {
-            currentUser {
-                accounts {
-                    billReserve {
-                        nextFundingDate
-                        totalReservedAmount
-                        estimatedNextFundingAmount
-                        settings {
-                            funding {
-                                subaccount {
-                                    displayName
-                                }
-                            }
+        query_string = """ 
+        query CurrentUser { 
+            currentUser { 
+                accounts { 
+                    billReserve { 
+                        nextFundingDate 
+                        totalReservedAmount 
+                        estimatedNextFundingAmount 
+                        settings { 
+                            funding { 
+                                subaccount { 
+                                    displayName 
+                                } 
+                            } 
                         }
-                        bills {
-                            amount
-                            anchorDate
-                            autoAdjustAmount
-                            dayOfMonth
-                            daysOverdue
-                            estimatedNextFundingAmount
-                            frequency
-                            frequencyInterval
-                            id
-                            name
-                            paused
-                            reservedAmount
-                            reservedBy
-                            status
-                        }
-                    }
-                }
-            }
-        }
+                        bills { 
+                            amount 
+                            anchorDate 
+                            autoAdjustAmount 
+                            dayOfMonth 
+                            daysOverdue 
+                            estimatedNextFundingAmount 
+                            frequency 
+                            frequencyInterval 
+                            id 
+                            name 
+                            paused 
+                            reservedAmount 
+                            reservedBy 
+                            status 
+                        } 
+                    } 
+                } 
+            } 
+        } 
         """
         response = requests.post(URL, headers=headers, json={"operationName": "CurrentUser", "query": query_string})
         data = response.json()
         accounts = data.get("data", {}).get("currentUser", {}).get("accounts", [])
-
+        
         all_bills = []
         summary = {}
-
+        
         for acc in accounts:
             bill_reserve = acc.get("billReserve")
             if bill_reserve:
@@ -285,34 +359,34 @@ def get_expenses_data():
                     pass
 
                 summary = {
-                    "totalReserved": (bill_reserve.get("totalReservedAmount") or 0) / 100.0,
-                    "nextFundingDate": bill_reserve.get("nextFundingDate"),
+                    "totalReserved": (bill_reserve.get("totalReservedAmount") or 0) / 100.0, 
+                    "nextFundingDate": bill_reserve.get("nextFundingDate"), 
                     "estimatedFunding": (bill_reserve.get("estimatedNextFundingAmount") or 0) / 100.0,
                     "fundingSource": funding_name # <--- Added this
                 }
-
+                
                 bills = bill_reserve.get("bills", [])
                 for b in bills:
                     amt = (b.get("amount") or 0) / 100.0
                     res = (b.get("reservedAmount") or 0) / 100.0
                     est_fund = (b.get("estimatedNextFundingAmount") or 0) / 100.0
                     all_bills.append({
-                        "id": b.get("id"),
-                        "name": b.get("name"),
-                        "amount": amt,
-                        "reserved": res,
-                        "estimatedFunding": est_fund,
-                        "frequency": b.get("frequency"),
-                        "dueDay": b.get("dayOfMonth"),
-                        "paused": b.get("paused"),
+                        "id": b.get("id"), 
+                        "name": b.get("name"), 
+                        "amount": amt, 
+                        "reserved": res, 
+                        "estimatedFunding": est_fund, 
+                        "frequency": b.get("frequency"), 
+                        "dueDay": b.get("dayOfMonth"), 
+                        "paused": b.get("paused"), 
                         "reservedBy": b.get("reservedBy")
                     })
-
+        
         all_bills.sort(key=lambda x: x['reservedBy'] or "9999-12-31")
         return {"expenses": all_bills, "summary": summary}
     except Exception as e:
         return {"error": str(e)}
-
+        
 @cached("goals")
 def get_goals_data():
     try:
@@ -423,7 +497,7 @@ def create_pocket(name, target_amount, initial_amount, note):
     try:
         headers = get_crew_headers()
         if not headers: return {"error": "Credentials not found"}
-
+        
         # Get the main Account ID automatically
         account_id = get_primary_account_id()
         if not account_id: return {"error": "Could not find Checking Account ID"}
@@ -442,7 +516,7 @@ def create_pocket(name, target_amount, initial_amount, note):
             }
         }
         """
-
+        
         # Convert amounts to cents (assuming API expects cents based on your move_money logic)
         target_cents = int(float(target_amount) * 100)
         initial_cents = int(float(initial_amount) * 100)
@@ -466,45 +540,108 @@ def create_pocket(name, target_amount, initial_amount, note):
         })
 
         data = response.json()
-
+        
         if 'errors' in data:
             return {"error": data['errors'][0]['message']}
-
+            
         # Clear cache so the new pocket appears immediately
         print("🧹 Clearing Cache after pocket creation...")
         cache.clear()
-
+        
         return {"success": True, "result": data.get("data", {}).get("createSubaccount", {}).get("result")}
 
     except Exception as e:
         return {"error": str(e)}
 
+@cached("cards")
 def get_cards_data():
     try:
         headers = get_crew_headers()
         if not headers: return {"error": "Credentials not found"}
-        query_phys = """ query PhysicalCards { currentUser { family { children { activePhysicalDebitCard { ...PhysicalDebitCardFields } issuingPhysicalDebitCard { ...PhysicalDebitCardFields } } parents { activePhysicalDebitCard { ...PhysicalDebitCardFields } issuingPhysicalDebitCard { ...PhysicalDebitCardFields } } } } } fragment PhysicalDebitCardFields on DebitCard { id color status lastFour user { firstName } } """
-        query_virt = """ query VirtualCards { currentUser { family { children { virtualDebitCards { ...VirtualDebitCardFields } } parents { virtualDebitCards { ...VirtualDebitCardFields } } } } } fragment VirtualDebitCardFields on DebitCard { id type color status lastFour name monthlyLimit user { firstName } } """
+        
+        # 1. New Query for Physical Cards (Parents & Children)
+        query_phys = """ 
+        query PhysicalCards {
+          currentUser {
+            id
+            family {
+              id
+              parents {
+                id
+                activePhysicalDebitCard {
+                  ...PhysicalDebitCardFields
+                  __typename
+                }
+                issuingPhysicalDebitCard {
+                  ...PhysicalDebitCardFields
+                  __typename
+                }
+                __typename
+              }
+              __typename
+            }
+            __typename
+          }
+        }
+
+        fragment PhysicalDebitCardFields on DebitCard {
+          id
+          color
+          status
+          lastFour
+          user {
+            id
+            isChild
+            firstName
+            userSpendConfig {
+              id
+              selectedSpendSubaccount {
+                id
+                name
+                __typename
+              }
+              __typename
+            }
+            __typename
+          }
+          __typename
+        }
+        """
+        
+        # We only execute the Physical card query for now as requested
         res_phys = requests.post(URL, headers=headers, json={"operationName": "PhysicalCards", "query": query_phys})
-        res_virt = requests.post(URL, headers=headers, json={"operationName": "VirtualCards", "query": query_virt})
         data_phys = res_phys.json()
-        data_virt = res_virt.json()
+        
         all_cards = []
-        fam_phys = data_phys.get("data", {}).get("currentUser", {}).get("family", {}) or {}
-        people_phys = (fam_phys.get("children") or []) + (fam_phys.get("parents") or [])
-        for person in people_phys:
-            card = person.get("activePhysicalDebitCard")
-            if card: all_cards.append({"id": card.get("id"), "type": "Physical", "name": "Simple Visa® Card", "holder": card.get("user", {}).get("firstName"), "last4": card.get("lastFour"), "color": card.get("color"), "status": card.get("status"), "limit": None})
-            issuing = person.get("issuingPhysicalDebitCard")
-            if issuing: all_cards.append({"id": issuing.get("id"), "type": "Physical", "name": "Simple Visa® Card (Issuing)", "holder": issuing.get("user", {}).get("firstName"), "last4": issuing.get("lastFour") or "????", "color": issuing.get("color"), "status": issuing.get("status"), "limit": None})
-        fam_virt = data_virt.get("data", {}).get("currentUser", {}).get("family", {}) or {}
-        people_virt = (fam_virt.get("children") or []) + (fam_virt.get("parents") or [])
-        for person in people_virt:
-            v_cards = person.get("virtualDebitCards", [])
-            for card in v_cards:
-                limit_raw = card.get("monthlyLimit")
-                limit_str = f"${limit_raw / 100:.0f}/mo" if limit_raw else "No Limit"
-                all_cards.append({"id": card.get("id"), "type": "Virtual", "name": card.get("name") or "Virtual Card", "holder": card.get("user", {}).get("firstName"), "last4": card.get("lastFour"), "color": card.get("color"), "status": card.get("status"), "limit": limit_str})
+        
+        # 2. Parse Parents Only (as requested)
+        fam = data_phys.get("data", {}).get("currentUser", {}).get("family", {}) or {}
+        parents = fam.get("parents") or []
+        
+        for parent in parents:
+            # Active Card
+            card = parent.get("activePhysicalDebitCard")
+            if card:
+                user_data = card.get("user", {})
+                config = user_data.get("userSpendConfig")
+                
+                # Determine current spend source
+                spend_source_id = "Checking"
+                if config and config.get("selectedSpendSubaccount"):
+                    spend_source_id = config["selectedSpendSubaccount"]["id"]
+                
+                all_cards.append({
+                    "id": card.get("id"),
+                    "userId": user_data.get("id"),
+                    "type": "Physical",
+                    "name": "Simple Visa® Card",
+                    "holder": user_data.get("firstName"),
+                    "last4": card.get("lastFour"),
+                    "color": card.get("color"),
+                    "status": card.get("status"),
+                    "current_spend_id": spend_source_id 
+                })
+
         return {"cards": all_cards}
     except Exception as e:
         print(f"Card Error: {e}")
@@ -548,7 +685,7 @@ def delete_subaccount_action(sub_id):
             }
         }
         """
-
+        
         variables = {"id": sub_id}
 
         response = requests.post(URL, headers=headers, json={
@@ -558,13 +695,13 @@ def delete_subaccount_action(sub_id):
         })
 
         data = response.json()
-
+        
         if 'errors' in data:
             return {"error": data['errors'][0]['message']}
-
+            
         print("🧹 Clearing Cache after deletion...")
         cache.clear()
-
+        
         return {"success": True, "result": data.get("data", {}).get("deleteSubaccount", {}).get("result")}
 
     except Exception as e:
@@ -587,7 +724,7 @@ def delete_bill_action(bill_id):
             }
         }
         """
-
+        
         variables = {"id": bill_id}
 
         response = requests.post(URL, headers=headers, json={
@@ -597,13 +734,13 @@ def delete_bill_action(bill_id):
         })
 
         data = response.json()
-
+        
         if 'errors' in data:
             return {"error": data['errors'][0]['message']}
-
+            
         print("🧹 Clearing Cache after bill deletion...")
         cache.clear()
-
+        
         return {"success": True, "result": data.get("data", {}).get("deleteBill", {}).get("result")}
 
     except Exception as e:
@@ -632,18 +769,18 @@ def get_bill_funding_source():
             }
         }
         """
-
+        
         response = requests.post(URL, headers=headers, json={
             "operationName": "CurrentUser",
             "query": query_string
         })
 
         data = response.json()
-
+        
         # Parse logic to find the active billReserve
         # We ignore 'errors' regarding nullables and just look for valid data
         accounts = data.get("data", {}).get("currentUser", {}).get("accounts", [])
-
+        
         for acc in accounts:
             # We look for the first account that has a non-null billReserve
             if acc and acc.get("billReserve"):
@@ -651,18 +788,90 @@ def get_bill_funding_source():
                     return acc["billReserve"]["settings"]["funding"]["subaccount"]["displayName"]
                 except (KeyError, TypeError):
                     continue
-
+                    
         return "Checking" # Default fallback
     except Exception:
         return "Checking"
 
+
+def set_spend_pocket_action(user_id, pocket_id):
+    try:
+        # --- FIX START: Resolve "Checking" to a real ID ---
+        if pocket_id == "Checking":
+            # Fetch the list of subaccounts to find the ID for "Checking"
+            all_subs = get_subaccounts_list()
+            
+            if "error" in all_subs:
+                return {"error": "Could not resolve Checking ID"}
+                
+            found_id = None
+            for sub in all_subs.get("subaccounts", []):
+                if sub["name"] == "Checking":
+                    found_id = sub["id"]
+                    break
+            
+            if found_id:
+                pocket_id = found_id
+            else:
+                return {"error": "Checking subaccount not found"}
+        # --- FIX END ---
+
+        headers = get_crew_headers()
+        if not headers: return {"error": "Credentials not found"}
+
+        query_string = """
+        mutation SetActiveSpendPocketScottie($input: SetSpendSubaccountInput!) {
+          setSpendSubaccount(input: $input) {
+            result {
+              id
+              userSpendConfig {
+                id
+                selectedSpendSubaccount {
+                  id
+                  clearedBalance
+                  __typename
+                }
+                __typename
+              }
+              __typename
+            }
+            __typename
+          }
+        }
+        """
+
+        variables = {
+            "input": {
+                "userId": user_id,
+                "selectedSpendSubaccountId": pocket_id
+            }
+        }
+
+        response = requests.post(URL, headers=headers, json={
+            "operationName": "SetActiveSpendPocketScottie",
+            "variables": variables,
+            "query": query_string
+        })
+
+        data = response.json()
+
+        if 'errors' in data:
+            return {"error": data['errors'][0]['message']}
+
+        print("🧹 Clearing Cache after spend pocket update...")
+        cache.clear()
+
+        return {"success": True, "result": data.get("data", {}).get("setSpendSubaccount", {}).get("result")}
+
+    except Exception as e:
+        return {"error": str(e)}
 
 # Update the main action to use the helper
 def create_bill_action(name, amount, frequency_key, day_of_month, match_string=None, min_amt=None, max_amt=None, is_variable=False):
     try:
         headers = get_crew_headers()
         if not headers: return {"error": "Credentials not found"}
-
+        
         account_id = get_primary_account_id()
         if not account_id: return {"error": "Main Account ID not found"}
 
@@ -675,10 +884,10 @@ def create_bill_action(name, amount, frequency_key, day_of_month, match_string=N
             "SEMI_ANNUALLY": ("MONTHLY", 6),
             "ANNUALLY":      ("YEARLY", 1)
         }
-
+        
         if frequency_key not in freq_map:
             return {"error": "Invalid frequency selected"}
-
+            
         final_freq, final_interval = freq_map[frequency_key]
 
         # --- 2. Calculate Anchor Date ---
@@ -688,7 +897,7 @@ def create_bill_action(name, amount, frequency_key, day_of_month, match_string=N
             anchor_date_obj = last_day_prev_month.replace(day=int(day_of_month))
         except ValueError:
             anchor_date_obj = last_day_prev_month
-
+            
         anchor_date_str = anchor_date_obj.strftime("%Y-%m-%d")
 
         # --- 3. Build Reassignment Rule ---
@@ -713,7 +922,7 @@ def create_bill_action(name, amount, frequency_key, day_of_month, match_string=N
             }
         }
         """
-
+        
         variables = {
             "input": {
                 "accountId": account_id,
@@ -735,22 +944,22 @@ def create_bill_action(name, amount, frequency_key, day_of_month, match_string=N
         })
 
         data = response.json()
-
+        
         if 'errors' in data:
             return {"error": data['errors'][0]['message']}
-
+            
         print("🧹 Clearing Cache after bill creation...")
         cache.clear()
-
+        
         # --- 5. Fetch Funding Name & Combine ---
         result = data.get("data", {}).get("createBill", {}).get("result", {})
-
+        
         # Fetch the name from the separate query you provided
         funding_name = get_bill_funding_source()
-
+        
         # Inject it into the result for the frontend
         result['fundingDisplayName'] = funding_name
-
+        
         return {"success": True, "result": result}
 
     except Exception as e:
@@ -773,7 +982,19 @@ def serve_sw():
 @app.route('/api/family')
 def api_family(): return jsonify(get_family_data())
 @app.route('/api/cards')
-def api_cards(): return jsonify(get_cards_data())
+def api_cards():
+    # Allow forcing a refresh if ?refresh=true is passed
+    refresh = request.args.get('refresh') == 'true'
+    return jsonify(get_cards_data(force_refresh=refresh))
+
+@app.route('/api/set-card-spend', methods=['POST'])
+def api_set_card_spend():
+    data = request.json
+    return jsonify(set_spend_pocket_action(
+        data.get('userId'),
+        data.get('pocketId')
+    ))
+
 @app.route('/api/savings')
 def api_savings():
     # Check if the frontend is asking for a forced refresh
@@ -826,9 +1047,9 @@ def api_delete_pocket():
 def api_create_pocket():
     data = request.json
     return jsonify(create_pocket(
-        data.get('name'),
-        data.get('amount'),
-        data.get('initial'),
+        data.get('name'), 
+        data.get('amount'), 
+        data.get('initial'), 
         data.get('note')
     ))
 
@@ -851,6 +1072,14 @@ def api_create_bill():
         data.get('maxAmount'),
         data.get('variable')
     ))
+
+@app.route('/api/user')
+def api_user():
+    return jsonify(get_user_profile_info())
+
+@app.route('/api/intercom')
+def api_intercom():
+    return jsonify(get_intercom_data())
 
 if __name__ == '__main__':
     init_db()
