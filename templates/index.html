@@ -1187,8 +1187,8 @@
                     data.cards.forEach(card => {
                         const bg = cardColors[card.color] || '#333';
                         
-                        let optionsHtml = `<option value="Checking" ${card.current_spend_id === 'Checking' ? 'selected' : ''}>Checking</option>`;
-                        
+                        // let optionsHtml = `<option value="Checking" ${card.current_spend_id === 'Checking' ? 'selected' : ''}>Checking</option>`;
+                        let optionsHtml = `<option value="Checking" ${card.current_spend_id === 'Checking' ? 'selected' : ''}>Safe-to-Spend</option>`;
                         if (typeof goalsDataStore !== 'undefined') {
                             goalsDataStore.forEach(goal => {
                                 const isSelected = card.current_spend_id === goal.id ? 'selected' : '';
