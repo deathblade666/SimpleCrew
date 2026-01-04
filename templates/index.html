@@ -1168,6 +1168,12 @@
                     <input type="number" id="pocket-amount" class="form-input" placeholder="0.00">
                 </div>
                 
+                <div class="form-group">
+                    <label class="form-label">Group (Optional)</label>
+                    <select id="pocket-group" class="form-select">
+                        <option value="">No Group</option>
+                    </select>
+                </div>
 
                 <div class="form-group">
                     <label class="form-label">Description (Optional)</label>
@@ -2705,6 +2711,17 @@
             document.getElementById('pocket-amount').value = '';
             document.getElementById('pocket-initial').value = '';
             document.getElementById('pocket-desc').value = '';
+            document.getElementById('pocket-group').value = '';
+            
+            // Populate group dropdown
+            const groupSelect = document.getElementById('pocket-group');
+            groupSelect.innerHTML = '<option value="">No Group</option>';
+            allGroups.forEach(group => {
+                const option = document.createElement('option');
+                option.value = group.id;
+                option.textContent = group.name;
+                groupSelect.appendChild(option);
+            });
             
             // Initial hint update
             const avail = currentBalances.checking;
@@ -2721,6 +2738,9 @@ function savePocket() {
             const amount = document.getElementById('pocket-amount').value;
             const initial = document.getElementById('pocket-initial').value || 0;
             const note = document.getElementById('pocket-desc').value || "";
+            const groupId = document.getElementById('pocket-group').value || null;
+            
+            console.log('Selected groupId:', groupId); // Debug log
             
             // Validation
             if(!name || !amount) {
@@ -2742,8 +2762,11 @@ function savePocket() {
                 name: name, 
                 amount: amount, 
                 initial: initial, 
-                note: note 
+                note: note,
+                groupId: groupId
             };
+            
+            console.log('Sending payload:', payload); // Debug log
 
             fetch('/api/create-pocket', {
                 method: 'POST',
@@ -2752,6 +2775,7 @@ function savePocket() {
             })
             .then(res => res.json())
             .then(data => {
+                console.log('Backend response:', data); // Debug log
                 btn.disabled = false;
                 btn.innerText = "Create Pocket";
 

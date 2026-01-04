@@ -1211,12 +1211,31 @@ def api_delete_pocket():
 @app.route('/api/create-pocket', methods=['POST'])
 def api_create_pocket():
     data = request.json
-    return jsonify(create_pocket(
+    result = create_pocket(
         data.get('name'), 
         data.get('amount'), 
         data.get('initial'), 
         data.get('note')
-    ))
+    )
+    
+    # If pocket creation was successful and groupId is provided, assign to group
+    if result.get('success') and data.get('groupId'):
+        pocket_id = result['result']['id']
+        group_id = data.get('groupId')
+        
+        # Assign to group in database
+        conn = sqlite3.connect(DB_FILE)
+        c = conn.cursor()
+        try:
+            c.execute("INSERT OR REPLACE INTO pocket_links (pocket_id, group_id, sort_order) VALUES (?, ?, ?)", 
+                     (pocket_id, group_id, 0))
+            conn.commit()
+        except Exception as e:
+            print(f"Warning: Failed to assign pocket to group: {e}")
+        finally:
+            conn.close()
+    
+    return jsonify(result)
 
 @app.route('/api/delete-bill', methods=['POST'])
 def api_delete_bill():
