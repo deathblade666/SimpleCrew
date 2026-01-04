@@ -1788,28 +1788,21 @@
                 });
 
                 // 3. Render Ungrouped Items
-                // Ungrouped zone needs to be a drop target for removing items from groups
-                html += `
-                <div class="ungrouped-zone group-drop-zone" 
-                     data-group-id="null"
-                     ondragover="allowDrop(event)" 
-                     ondrop="drop(event)"
-                     ondragleave="dragLeave(event)">
-                `;
-                
                 if (ungrouped.length > 0) {
                     html += `<div style="padding:15px 25px; font-size:11px; color:#999; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-top:20px;">Ungrouped</div>`;
                     ungrouped.forEach(g => {
                         html += renderGoalItem(g, g.originalIndex);
                     });
-                } else {
-                    // Empty state for ungrouped area so you can drag things into it even if empty
-                    html += `<div style="padding:20px; font-size:11px; color:#DDD; font-weight:700; text-transform:uppercase; text-align:center; border:2px dashed transparent;">Drag here to ungroup</div>`;
                 }
-                
-                html += `</div>`; // Close Ungrouped Zone
 
                 document.getElementById('goals-list').innerHTML = html;
+                
+                // Make the entire goals-list container a drop zone for ungrouping
+                const goalsList = document.getElementById('goals-list');
+                goalsList.setAttribute('data-group-id', 'null');
+                goalsList.addEventListener('dragover', allowDrop);
+                goalsList.addEventListener('drop', drop);
+                goalsList.addEventListener('dragleave', dragLeave);
             });
         }
 
@@ -1876,7 +1869,7 @@
             
             const touch = ev.touches[0];
             const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-            const zone = elementBelow?.closest('.group-drop-zone');
+            const zone = elementBelow?.closest('.group-drop-zone') || elementBelow?.closest('#goals-list');
             
             // Clear all active states
             document.querySelectorAll('.drag-active').forEach(el => el.classList.remove('drag-active'));
@@ -1885,9 +1878,9 @@
                 zone.classList.add('drag-active');
                 
                 let listContainer;
-                if (zone.classList.contains('ungrouped-zone')) {
+                if (zone.id === 'goals-list') {
                     listContainer = zone;
-                } else {
+                } else if (zone.classList.contains('group-container')) {
                     listContainer = zone.querySelector('.group-content');
                     if (listContainer?.classList.contains('collapsed')) {
                         listContainer.classList.remove('collapsed');
@@ -1912,20 +1905,22 @@
             
             const touch = ev.changedTouches[0];
             const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-            const zone = elementBelow?.closest('.group-drop-zone');
+            const zone = elementBelow?.closest('.group-drop-zone') || elementBelow?.closest('#goals-list');
             
             document.querySelectorAll('.drag-active').forEach(el => el.classList.remove('drag-active'));
             draggedItem.classList.remove('is-dragging');
             
             if (zone) {
-                const rawGroupId = zone.getAttribute('data-group-id');
-                const groupId = rawGroupId === "null" ? null : rawGroupId;
-                
+                let groupId;
                 let listContainer;
-                if (zone.classList.contains('ungrouped-zone')) {
+                
+                if (zone.id === 'goals-list') {
+                    groupId = null;
                     listContainer = zone;
                 } else {
-                    listContainer = zone.querySelector('.group-content');
+                    const rawGroupId = zone.getAttribute('data-group-id');
+                    groupId = rawGroupId === "null" ? null : rawGroupId;
+                    listContainer = zone.classList.contains('group-container') ? zone.querySelector('.group-content') : zone;
                 }
                 
                 if (listContainer) {
@@ -1940,34 +1935,34 @@
 
         function allowDrop(ev) {
             ev.preventDefault();
-            const zone = ev.target.closest('.group-drop-zone');
+            const zone = ev.target.closest('.group-drop-zone') || ev.target.closest('#goals-list');
             if (!zone) return;
 
+            // Clear all active states first
+            document.querySelectorAll('.drag-active').forEach(el => el.classList.remove('drag-active'));
             zone.classList.add('drag-active');
 
-            // SORTING LOGIC:
-            // Determine the list container (either .group-content or .ungrouped-zone)
-            // Note: The .group-drop-zone class is on the CONTAINER for Ungrouped, 
-            // but on the WRAPPER for Groups. We need to find the actual list of items.
             let listContainer;
-            if (zone.classList.contains('ungrouped-zone')) {
+            if (zone.id === 'goals-list') {
+                // Dropped outside any group - ungroup the item
                 listContainer = zone;
-            } else {
+            } else if (zone.classList.contains('group-container')) {
                 // Inside a group card, the items are in .group-content
                 listContainer = zone.querySelector('.group-content');
                 // If the group is collapsed, we force expand it to allow drop
-                if (listContainer.classList.contains('collapsed')) {
+                if (listContainer?.classList.contains('collapsed')) {
                     listContainer.classList.remove('collapsed');
-                    zone.querySelector('.group-header').classList.remove('collapsed');
+                    zone.querySelector('.group-header')?.classList.remove('collapsed');
                 }
             }
 
-            const afterElement = getDragAfterElement(listContainer, ev.clientY);
-            
-            if (afterElement == null) {
-                listContainer.appendChild(draggedItem);
-            } else {
-                listContainer.insertBefore(draggedItem, afterElement);
+            if (listContainer && draggedItem) {
+                const afterElement = getDragAfterElement(listContainer, ev.clientY);
+                if (afterElement == null) {
+                    listContainer.appendChild(draggedItem);
+                } else {
+                    listContainer.insertBefore(draggedItem, afterElement);
+                }
             }
         }
 
@@ -2006,10 +2001,11 @@
 
         function drop(ev) {
             ev.preventDefault();
-            const zone = ev.target.closest('.group-drop-zone');
+            const zone = ev.target.closest('.group-drop-zone') || ev.target.closest('#goals-list');
             if (!zone) return;
             
-            zone.classList.remove('drag-active');
+            // Clear all active states
+            document.querySelectorAll('.drag-active').forEach(el => el.classList.remove('drag-active'));
             
             if(draggedItem) {
                 draggedItem.classList.remove('is-dragging');
@@ -2017,23 +2013,24 @@
             }
 
             // 1. Identify the new Group ID
-            const rawGroupId = zone.getAttribute('data-group-id');
-            const groupId = rawGroupId === "null" ? null : rawGroupId;
-
-            // 2. Determine the new Order of IDs in this specific container
-            // We look at the DOM children order because allowDrop() already visually rearranged them!
+            let groupId;
             let listContainer;
-            if (zone.classList.contains('ungrouped-zone')) {
+            
+            if (zone.id === 'goals-list') {
+                // Dropped outside any group - ungroup the item
+                groupId = null;
                 listContainer = zone;
             } else {
-                listContainer = zone.querySelector('.group-content');
+                const rawGroupId = zone.getAttribute('data-group-id');
+                groupId = rawGroupId === "null" ? null : rawGroupId;
+                listContainer = zone.classList.contains('group-container') ? zone.querySelector('.group-content') : zone;
             }
 
-            const childPocketIds = [...listContainer.querySelectorAll('.draggable-item')]
-                                    .map(el => el.getAttribute('data-pocket-id'));
-
-            // 3. Send to Backend
-            savePocketOrder(groupId, childPocketIds);
+            if (listContainer) {
+                const childPocketIds = [...listContainer.querySelectorAll('.draggable-item')]
+                                        .map(el => el.getAttribute('data-pocket-id'));
+                savePocketOrder(groupId, childPocketIds);
+            }
         }
 
         function savePocketOrder(groupId, orderedIds) {
