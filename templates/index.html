@@ -2054,10 +2054,10 @@
             // Load pocket information immediately
             refreshCreditCardBalance(status);
             
-            // Set up periodic refresh every 30 seconds (silent background check)
+            // Set up periodic refresh every hour (silent background check)
             creditCardRefreshInterval = setInterval(() => {
                 refreshCreditCardBalance(status);
-            }, 30000); // 30 seconds
+            }, 3600000); // 1 hour
         }
 
         function refreshCreditCardBalance(status) {
