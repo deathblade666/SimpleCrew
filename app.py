@@ -2141,6 +2141,26 @@ def check_simplefin_transactions(conn, c, account_id, pocket_id, access_url):
         conn.commit()
         print(f"✅ Committed {len(new_transactions)} new transactions to database")
 
+        # Move money from Checking to Credit Card pocket for each new transaction
+        if new_transactions and pocket_id:
+            headers_crew = get_crew_headers()
+            if headers_crew:
+                # Get Checking subaccount ID
+                all_subs = get_subaccounts_list()
+                checking_subaccount_id = None
+                if "error" not in all_subs:
+                    for sub in all_subs.get("subaccounts", []):
+                        if sub["name"] == "Checking":
+                            checking_subaccount_id = sub["id"]
+                            break
+
+                if checking_subaccount_id:
+                    total_new_spending = sum(abs(float(tx.get("amount", 0))) for tx in new_transactions)
+                    if total_new_spending > 0.01:
+                        print(f"💸 Moving ${total_new_spending:.2f} from Checking to Credit Card pocket for {len(new_transactions)} new transaction(s)", flush=True)
+                        move_money(checking_subaccount_id, pocket_id, str(total_new_spending), f"SimpleFin: {len(new_transactions)} new transaction(s)")
+                        cache.clear()
+
         # Update pocket balance
         if pocket_id:
             # SimpleFin returns balance as a string, convert to float
@@ -2550,6 +2570,23 @@ def api_simplefin_create_pocket_with_balance():
         # Update the config with pocket_id
         c.execute("UPDATE credit_card_config SET pocket_id = ? WHERE account_id = ? AND provider = 'simplefin'", (pocket_id, account_id))
         conn.commit()
+
+        # Immediately fetch transactions for the new account and reset timer
+        if access_url:
+            print(f"🔄 Immediately fetching transactions for newly added SimpleFin account {account_id}", flush=True)
+            global _last_simplefin_sync
+
+            # Fetch transactions
+            try:
+                check_simplefin_transactions(conn, c, account_id, pocket_id, access_url)
+                # Reset the timer so hourly sync starts fresh
+                _last_simplefin_sync = time.time()
+                print(f"✅ Initial transaction sync complete, hourly timer reset", flush=True)
+            except Exception as e:
+                print(f"⚠️ Error fetching initial transactions: {e}", flush=True)
+                import traceback
+                traceback.print_exc()
+
         conn.close()
 
         cache.clear()
@@ -2852,6 +2889,6 @@ def api_simplefin_disconnect():
 
 if __name__ == '__main__':
     init_db()
-    print("Server running on http://127.0.0.1:8080")
+    print("Server running on http://127.0.0.1:8081")
     # Background thread will start automatically on first request
-    app.run(host='0.0.0.0', debug=True, port=8080)
+    app.run(host='0.0.0.0', debug=True, port=8081)
