@@ -1688,71 +1688,24 @@
                                 </div>
                             </div>
 
-                            <!-- Credit Card Pocket Display with Animation -->
-                            <div id="credit-card-pocket-display" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 40px; margin-bottom: 30px; color: white; position: relative; overflow: hidden;">
-                                <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-                                <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
-                                <div style="position: relative; z-index: 1;">
-                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
-                                        <div>
-                                            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">💳 Credit Card Pocket</div>
-                                            <div id="credit-pocket-name" style="font-size: 28px; font-weight: 700; margin-bottom: 4px;"></div>
-                                            <div style="font-size: 14px; opacity: 0.8;" id="credit-pocket-account"></div>
-                                        </div>
-                                        <div style="text-align: right;">
-                                            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 8px;">Balance</div>
-                                            <div id="credit-pocket-balance" style="font-size: 36px; font-weight: 700;"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <!-- Multi-Account Cards Container -->
+                            <div id="credit-accounts-list" style="display: grid; gap: 20px; margin-bottom: 20px;">
+                                <!-- Account cards will be dynamically inserted here -->
                             </div>
 
-                            <!-- Management Actions -->
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 30px;">
-                                <button onclick="syncCreditBalance()" style="background: white; border: 2px solid #e0e0e0; border-radius: 12px; padding: 20px; cursor: pointer; text-align: left; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--simple-blue)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none'">
-                                    <div style="font-size: 24px; margin-bottom: 8px;">🔄</div>
-                                    <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 4px;">Sync Balance</div>
-                                    <div style="font-size: 13px; color: var(--text-light);">Update pocket to match card balance</div>
-                                </button>
-                                <button onclick="changeCreditAccount()" style="background: white; border: 2px solid #e0e0e0; border-radius: 12px; padding: 20px; cursor: pointer; text-align: left; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--simple-blue)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none'">
-                                    <div style="font-size: 24px; margin-bottom: 8px;">🔀</div>
-                                    <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 4px;">Change Account</div>
-                                    <div style="font-size: 13px; color: var(--text-light);">Select a different card</div>
-                                </button>
-                                <button onclick="stopCreditTracking()" style="background: white; border: 2px solid #e0e0e0; border-radius: 12px; padding: 20px; cursor: pointer; text-align: left; transition: all 0.2s;" onmouseover="this.style.borderColor='#dc3545'; this.style.boxShadow='0 4px 12px rgba(220,53,69,0.2)'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none'">
-                                    <div style="font-size: 24px; margin-bottom: 8px;">⏹️</div>
-                                    <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 4px;">Stop Tracking</div>
-                                    <div style="font-size: 13px; color: var(--text-light);">Disconnect credit card</div>
-                                </button>
-                            </div>
+                            <!-- Add Another Account Button -->
+                            <button onclick="addAnotherSimpleFinAccount()" style="background: white; border: 2px dashed #ccc; border-radius: 12px; padding: 20px; cursor: pointer; width: 100%; text-align: center; color: var(--simple-blue); font-weight: 600; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--simple-blue)'; this.style.background='#f8f9fa'" onmouseout="this.style.borderColor='#ccc'; this.style.background='white'">
+                                + Add Another SimpleFin Card
+                            </button>
 
-                            <!-- Account Info -->
-                            <div style="background: #f8f9fa; border-radius: 12px; padding: 24px; margin-bottom: 30px;">
-                                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: var(--text-dark);">Account Information</h3>
-                                <div style="display: grid; gap: 12px;">
-                                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e0e0e0;">
-                                        <span style="color: var(--text-light);">Account Name</span>
-                                        <span id="mgmt-account-name" style="font-weight: 600; color: var(--text-dark);"></span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e0e0e0;">
-                                        <span style="color: var(--text-light);">Account ID</span>
-                                        <span id="mgmt-account-id" style="font-family: monospace; font-size: 12px; color: var(--text-dark);"></span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 12px 0;">
-                                        <span style="color: var(--text-light);">Connected</span>
-                                        <span id="mgmt-connected-date" style="color: var(--text-dark);"></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- LunchFlow Sync Disclaimer -->
-                            <div style="background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                            <!-- Sync Schedule Info -->
+                            <div style="background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 8px; padding: 20px; margin-top: 30px;">
                                 <div style="display: flex; align-items: flex-start; gap: 12px;">
                                     <div style="font-size: 24px;">ℹ️</div>
                                     <div style="flex: 1;">
                                         <div style="font-weight: 600; margin-bottom: 8px; color: #1565c0;">Sync Schedule</div>
                                         <p style="color: #1565c0; line-height: 1.6; margin: 0; font-size: 14px;">
-                                            LunchFlow syncs your credit card data once per day. Transactions and balance updates will appear automatically after LunchFlow completes its daily sync. We check for updates in the background, so your data will be current once LunchFlow has synced.
+                                            SimpleFin accounts sync automatically every hour in the background. Each account syncs independently, so you can track multiple cards without delays.
                                         </p>
                                     </div>
                                 </div>
@@ -2006,11 +1959,26 @@
                     const simplefinSetup = document.getElementById('simplefin-setup');
                     const setupScreen = document.getElementById('credit-setup-screen');
                     const managementScreen = document.getElementById('credit-management-screen');
+                    const simplefinAccountSelection = document.getElementById('simplefin-account-selection');
 
-                    if (status.configured && status.pocketCreated) {
-                        // Fully configured - show management interface
+                    // Check if we have SimpleFin accounts (multi-account mode)
+                    const hasSimpleFinAccounts = status.accounts && status.accounts.length > 0;
+
+                    if (hasSimpleFinAccounts) {
+                        // Show multi-account management screen
                         setupScreen.style.display = 'none';
                         managementScreen.style.display = 'block';
+                        if (simplefinAccountSelection) {
+                            simplefinAccountSelection.style.display = 'none';
+                        }
+                        loadCreditAccounts(status);
+                    } else if (status.configured && status.pocketCreated) {
+                        // Fully configured (legacy single account) - show management interface
+                        setupScreen.style.display = 'none';
+                        managementScreen.style.display = 'block';
+                        if (simplefinAccountSelection) {
+                            simplefinAccountSelection.style.display = 'none';
+                        }
                         loadCreditManagement(status);
                     } else if (status.configured && !status.pocketCreated) {
                         // Account selected but pocket not created - show balance sync modal
@@ -2259,19 +2227,46 @@
         }
 
         function loadSimpleFinAccounts() {
-            document.getElementById('simplefin-token-input').style.display = 'none';
-            document.getElementById('simplefin-account-selection').style.display = 'block';
-
+            console.log('loadSimpleFinAccounts called');
+            const tokenInput = document.getElementById('simplefin-token-input');
+            const accountSelection = document.getElementById('simplefin-account-selection');
             const accountsList = document.getElementById('simplefin-accounts-list');
+
+            console.log('Elements found:', {
+                tokenInput: !!tokenInput,
+                accountSelection: !!accountSelection,
+                accountsList: !!accountsList
+            });
+
+            if (tokenInput) tokenInput.style.display = 'none';
+            if (accountSelection) accountSelection.style.display = 'block';
+
+            if (!accountsList) {
+                console.error('simplefin-accounts-list element not found!');
+                return;
+            }
+
             accountsList.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;"><div class="spinner" style="border: 3px solid #f3f3f3; border-top: 3px solid var(--simple-blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>Loading accounts...</div>';
 
+            // Ensure we have the access URL
+            if (!simpleFinAccessUrl) {
+                console.error('simpleFinAccessUrl is not set!');
+                accountsList.innerHTML = '<div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 20px; color: #721c24;"><strong>Error:</strong> SimpleFin access URL not found. Please reconnect SimpleFin.</div>';
+                return;
+            }
+
+            console.log('Fetching accounts with access URL (length):', simpleFinAccessUrl.length);
             fetch('/api/simplefin/accounts', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({accessUrl: simpleFinAccessUrl})
             })
-            .then(res => res.json())
+            .then(res => {
+                console.log('Accounts API response status:', res.status);
+                return res.json();
+            })
             .then(data => {
+                console.log('Accounts API response data:', data);
                 if (data.error) {
                     accountsList.innerHTML = `<div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 20px; color: #721c24;">
                         <strong>Error loading accounts:</strong> ${data.error}
@@ -2285,6 +2280,7 @@
                     return;
                 }
 
+                console.log('Building account list HTML for', accounts.length, 'accounts');
                 let html = '<div style="display: flex; flex-direction: column; gap: 12px;">';
                 accounts.forEach(account => {
                     const accountId = account.id;
@@ -2314,7 +2310,11 @@
                     `;
                 });
                 html += '</div>';
+                console.log('Setting innerHTML for accountsList element');
+                console.log('accountsList element:', accountsList);
+                console.log('HTML length:', html.length);
                 accountsList.innerHTML = html;
+                console.log('innerHTML set successfully');
             })
             .catch(err => {
                 accountsList.innerHTML = `<div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 20px; color: #721c24;">
@@ -2324,37 +2324,53 @@
         }
 
         function selectSimpleFinAccount(accountId, accountName) {
-            pendingAccountId = accountId;
-            pendingAccountName = accountName;
-
-            // Save the account selection
-            fetch('/api/simplefin/set-credit-card', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    accountId: pendingAccountId,
-                    accountName: pendingAccountName,
-                    accessUrl: simpleFinAccessUrl
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.error) {
-                    appAlert('Error saving account: ' + data.error, 'Error');
-                    return;
-                }
-
-                // Fetch balance and show sync confirmation modal
-                fetch('/api/simplefin/get-balance', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        accountId: pendingAccountId,
-                        accessUrl: simpleFinAccessUrl
-                    })
-                })
+            // Check if account already tracked
+            fetch('/api/lunchflow/credit-card-status')
                 .then(res => res.json())
+                .then(statusData => {
+                    const existingAccount = statusData.accounts?.find(a => a.accountId === accountId);
+                    if (existingAccount) {
+                        appAlert('This account is already being tracked!', 'Info');
+                        return Promise.reject(new Error('Account already tracked'));
+                    }
+
+                    pendingAccountId = accountId;
+                    pendingAccountName = accountName;
+
+                    // Save the account selection
+                    return fetch('/api/simplefin/set-credit-card', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            accountId: pendingAccountId,
+                            accountName: pendingAccountName,
+                            accessUrl: simpleFinAccessUrl
+                        })
+                    });
+                })
+                .then(res => res ? res.json() : null)
+                .then(data => {
+                    if (!data) return;
+
+                    if (data.error) {
+                        appAlert('Error saving account: ' + data.error, 'Error');
+                        return;
+                    }
+
+                    // Fetch balance and show sync confirmation modal
+                    return fetch('/api/simplefin/get-balance', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            accountId: pendingAccountId,
+                            accessUrl: simpleFinAccessUrl
+                        })
+                    });
+                })
+                .then(res => res ? res.json() : null)
                 .then(balanceData => {
+                    if (!balanceData) return;
+
                     if (balanceData.error) {
                         showBalanceSyncModal(null);
                     } else {
@@ -2363,13 +2379,11 @@
                     }
                 })
                 .catch(err => {
-                    console.error('Error fetching balance:', err);
-                    showBalanceSyncModal(null);
+                    if (err.message !== 'Account already tracked') {
+                        console.error('Error:', err);
+                        appAlert('Error: ' + err.message, 'Error');
+                    }
                 });
-            })
-            .catch(err => {
-                appAlert('Error: ' + err.message, 'Error');
-            });
         }
 
         function disconnectSimpleFin() {
@@ -2399,12 +2413,24 @@
 
         function handleBalanceSync(syncBalance) {
             const modal = document.getElementById('balance-sync-modal');
-            modal.style.display = 'none';
 
             if (!pendingAccountId) {
                 appAlert('Error: No account selected', 'Error');
                 return;
             }
+
+            // Show loading state in modal
+            const modalContent = modal.querySelector('div[style*="background: white"]');
+            const originalContent = modalContent.innerHTML;
+            modalContent.innerHTML = `
+                <div style="text-align: center; padding: 60px 40px;">
+                    <div class="spinner" style="border: 4px solid #f3f3f3; border-top: 4px solid var(--simple-blue); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 0 auto 24px;"></div>
+                    <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--text-dark);">Setting up your account...</h3>
+                    <p style="color: var(--text-light); line-height: 1.6;">
+                        ${syncBalance ? 'Syncing balance and importing transactions. This may take a moment.' : 'Creating pocket and importing transactions. This may take a moment.'}
+                    </p>
+                </div>
+            `;
 
             // Determine which API to use based on selected provider
             const endpoint = selectedProvider === 'simplefin'
@@ -2424,11 +2450,21 @@
             })
             .then(res => res.json())
             .then(data => {
+                modal.style.display = 'none';
+                modalContent.innerHTML = originalContent;
+
                 if (data.error) {
                     appAlert('Error creating pocket: ' + data.error, 'Error');
                     return;
                 }
-                
+
+                // Show success message with details
+                if (syncBalance && data.syncedBalance) {
+                    appAlert(`✅ Account added successfully!\n\nThe pocket balance has been synced to match your current credit card balance. Transactions have been imported and will be tracked going forward.`, 'Success');
+                } else {
+                    appAlert(`✅ Account added successfully!\n\nThe pocket starts at $0. Transactions will be tracked going forward, and new spending will automatically adjust the pocket balance.`, 'Success');
+                }
+
                 // Refresh Safe to Spend balance and goals/pockets list after pocket creation
                 if (typeof initBalances === 'function') {
                     initBalances(true);
@@ -2436,15 +2472,17 @@
                 if (typeof loadGoals === 'function') {
                     loadGoals(true);
                 }
-                
+
                 // Reload to show management interface
                 loadCreditSetup();
-                
+
                 // Clear pending values
                 pendingAccountId = null;
                 pendingAccountName = null;
             })
             .catch(err => {
+                modal.style.display = 'none';
+                modalContent.innerHTML = originalContent;
                 appAlert('Error: ' + err.message, 'Error');
             });
         }
@@ -2511,6 +2549,248 @@
             }
             stopTransactionAutoRefresh();
         }
+
+        // --- MULTI-ACCOUNT MANAGEMENT FUNCTIONS ---
+
+        function loadCreditAccounts(status) {
+            // Show/hide invalid token warning for SimpleFin
+            if (status && status.simplefinTokenInvalid) {
+                document.getElementById('credit-management-invalid-warning').style.display = 'block';
+            } else {
+                document.getElementById('credit-management-invalid-warning').style.display = 'none';
+            }
+
+            // Fetch latest status to get accounts array
+            fetch('/api/lunchflow/credit-card-status')
+                .then(res => res.json())
+                .then(data => {
+                    const accounts = data.accounts || [];
+                    renderAccountCards(accounts);
+                });
+        }
+
+        function renderAccountCards(accounts) {
+            const container = document.getElementById('credit-accounts-list');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            if (accounts.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #999;">No SimpleFin accounts configured yet.</div>';
+                return;
+            }
+
+            // Fetch pockets data to get balances
+            fetch('/api/goals?refresh=true')
+                .then(res => res.json())
+                .then(data => {
+                    accounts.forEach(account => {
+                        // Find the pocket for this account
+                        const pocket = data.goals ? data.goals.find(g => g.id === account.pocketId) : null;
+                        const balance = pocket ? fmt(pocket.balance) : 'N/A';
+                        const pocketName = pocket ? pocket.name : 'Credit Card';
+
+                        const cardHtml = `
+                            <div class="credit-account-card" data-account-id="${account.accountId}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 30px; color: white; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                                <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                                <div style="position: relative; z-index: 1;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                                        <div style="flex: 1;">
+                                            <div style="font-size: 14px; opacity: 0.9;">💳 ${pocketName}</div>
+                                            <div style="font-size: 24px; font-weight: 700; margin-top: 8px;">${account.accountName}</div>
+                                            <div style="font-size: 12px; opacity: 0.8; font-family: monospace; margin-top: 4px;">${account.accountId}</div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div style="font-size: 14px; opacity: 0.9;">Balance</div>
+                                            <div style="font-size: 28px; font-weight: 700;">${balance}</div>
+                                        </div>
+                                    </div>
+
+                                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                                        <button onclick="syncAccountBalance('${account.accountId}')" style="flex: 1; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                            🔄 Sync
+                                        </button>
+                                        <button onclick="viewAccountTransactions('${account.accountId}')" style="flex: 1; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                                            📋 Transactions
+                                        </button>
+                                        <button onclick="removeAccount('${account.accountId}')" style="background: rgba(220,53,69,0.3); border: 1px solid rgba(220,53,69,0.5); color: white; padding: 12px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(220,53,69,0.5)'" onmouseout="this.style.background='rgba(220,53,69,0.3)'">
+                                            🗑️
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        container.insertAdjacentHTML('beforeend', cardHtml);
+                    });
+                })
+                .catch(err => console.error('Error loading pocket balances:', err));
+        }
+
+        function syncAccountBalance(accountId) {
+            appConfirm('⚠️ WARNING: This will sync your credit card pocket balance to match your current credit card balance. This will move money from Safe-to-Spend to the pocket (or vice versa).\n\nDo you want to continue?', 'Sync Balance', { confirmText: 'Continue' }).then(confirmed => {
+                if (!confirmed) return;
+
+                // Show loading indicator
+                const loadingModal = document.createElement('div');
+                loadingModal.style = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+                loadingModal.innerHTML = `
+                    <div style="background: white; border-radius: 16px; padding: 40px; text-align: center; max-width: 400px;">
+                        <div class="spinner" style="border: 4px solid #f3f3f3; border-top: 4px solid var(--simple-blue); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 0 auto 24px;"></div>
+                        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--text-dark);">Syncing Balance...</h3>
+                        <p style="color: var(--text-light);">Fetching current balance from SimpleFin</p>
+                    </div>
+                `;
+                document.body.appendChild(loadingModal);
+
+                fetch('/api/simplefin/sync-balance', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({accountId: accountId})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    loadingModal.remove();
+                    if (data.error) {
+                        appAlert('Error syncing balance: ' + data.error, 'Error');
+                    } else {
+                        appAlert(`✅ Balance synced successfully!\n\nPrevious: ${fmt(data.previousBalance)}\nNew: ${fmt(data.targetBalance)}`, 'Success');
+                        loadCreditSetup();
+                        if (typeof loadGoals === 'function') loadGoals(true);
+                        if (typeof initBalances === 'function') initBalances(true);
+                    }
+                })
+                .catch(err => {
+                    loadingModal.remove();
+                    appAlert('Error syncing balance: ' + err.message, 'Error');
+                });
+            });
+        }
+
+        function removeAccount(accountId) {
+            const warningMessage = `⚠️ WARNING: Removing this credit card account will:\n\n` +
+                                  `1. DELETE the credit card pocket permanently\n` +
+                                  `2. Return all money from the pocket back to Safe-to-Spend\n` +
+                                  `3. Remove all transaction history for this account\n\n` +
+                                  `Are you sure you want to remove this account?`;
+
+            appConfirm(warningMessage, 'Remove Account', { confirmText: 'Remove Account', danger: true }).then(confirmed => {
+                if (!confirmed) return;
+
+                // Show loading indicator
+                const loadingModal = document.createElement('div');
+                loadingModal.style = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+                loadingModal.innerHTML = `
+                    <div style="background: white; border-radius: 16px; padding: 40px; text-align: center; max-width: 400px;">
+                        <div class="spinner" style="border: 4px solid #f3f3f3; border-top: 4px solid var(--simple-blue); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 0 auto 24px;"></div>
+                        <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--text-dark);">Removing Account...</h3>
+                        <p style="color: var(--text-light);">Deleting pocket and returning funds</p>
+                    </div>
+                `;
+                document.body.appendChild(loadingModal);
+
+                fetch('/api/simplefin/stop-tracking', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({accountId: accountId})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    loadingModal.remove();
+                    if (data.error) {
+                        appAlert('Error removing account: ' + data.error, 'Error');
+                    } else {
+                        appAlert('✅ Account removed successfully!\n\nThe pocket has been deleted and funds returned to Safe-to-Spend.', 'Success');
+                        loadCreditSetup();
+                        if (typeof loadGoals === 'function') loadGoals(true);
+                        if (typeof initBalances === 'function') initBalances(true);
+                    }
+                })
+                .catch(err => {
+                    loadingModal.remove();
+                    appAlert('Error removing account: ' + err.message, 'Error');
+                });
+            });
+        }
+
+        function viewAccountTransactions(accountId) {
+            fetch(`/api/lunchflow/transactions?accountId=${accountId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.transactions && data.transactions.length > 0) {
+                        showTransactionsModal(data.transactions);
+                    } else {
+                        appAlert('No transactions found for this account', 'Info');
+                    }
+                })
+                .catch(err => appAlert('Error loading transactions: ' + err.message, 'Error'));
+        }
+
+        function addAnotherSimpleFinAccount() {
+            // Set provider to simplefin
+            selectedProvider = 'simplefin';
+
+            // Return to account selection screen
+            document.getElementById('credit-management-screen').style.display = 'none';
+            document.getElementById('credit-setup-screen').style.display = 'block';
+            document.getElementById('provider-selection').style.display = 'none';
+            document.getElementById('simplefin-setup').style.display = 'block';
+
+            // Fetch SimpleFin access URL first, then load accounts
+            console.log('Fetching SimpleFin access URL...');
+            fetch('/api/simplefin/get-access-url')
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Access URL response:', data);
+                    if (data.success && data.accessUrl) {
+                        simpleFinAccessUrl = data.accessUrl;
+                        console.log('Access URL set, loading accounts...');
+                        loadSimpleFinAccounts();
+                    } else {
+                        console.error('No access URL in response');
+                        appAlert('Error: SimpleFin access URL not found. Please reconnect SimpleFin.', 'Error');
+                        // Go back to setup
+                        document.getElementById('credit-setup-screen').style.display = 'block';
+                        document.getElementById('provider-selection').style.display = 'block';
+                        document.getElementById('simplefin-setup').style.display = 'none';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching access URL:', err);
+                    appAlert('Error loading SimpleFin accounts: ' + err.message, 'Error');
+                });
+        }
+
+        function showTransactionsModal(transactions) {
+            // Create a simple modal to display transactions
+            const modal = document.createElement('div');
+            modal.style = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+
+            const content = document.createElement('div');
+            content.style = 'background: white; border-radius: 12px; padding: 30px; max-width: 600px; max-height: 80vh; overflow-y: auto;';
+
+            let html = '<h2 style="margin-bottom: 20px;">Recent Transactions</h2>';
+            transactions.forEach(t => {
+                html += `
+                    <div style="border-bottom: 1px solid #eee; padding: 12px 0;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong>${t.merchant || t.description}</strong>
+                            <strong>${fmt(Math.abs(t.amount))}</strong>
+                        </div>
+                        <div style="font-size: 12px; color: #666;">${t.date}${t.isPending ? ' (Pending)' : ''}</div>
+                    </div>
+                `;
+            });
+            html += '<button onclick="this.closest(\'div[style*=fixed]\').remove()" style="margin-top: 20px; padding: 10px 20px; background: var(--simple-blue); color: white; border: none; border-radius: 8px; cursor: pointer;">Close</button>';
+
+            content.innerHTML = html;
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+        }
+
+        // --- END MULTI-ACCOUNT MANAGEMENT FUNCTIONS ---
 
         function syncCreditBalance() {
             fetch('/api/lunchflow/credit-card-status')
