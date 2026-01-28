@@ -18,8 +18,8 @@ DB_FILE = os.environ.get("DB_FILE", "savings_data.db")
 _background_thread_started = False
 _background_thread_lock = threading.Lock()
 
-# Track last SimpleFin sync time (limit to once per hour)
-_last_simplefin_sync = 0
+# Track last SimpleFin sync time per account (limit to once per hour per account)
+_last_simplefin_sync = {}  # Dictionary: account_id -> timestamp
 _simplefin_sync_interval = 3600  # 1 hour in seconds
 
 # --- CACHING SYSTEM ---
@@ -1309,10 +1309,17 @@ def api_transactions():
     max_date = request.args.get('maxDate')
     min_amt = request.args.get('minAmt')
     max_amt = request.args.get('maxAmt')
-    
+
     # Get regular transactions
-    result = get_transactions_data(q, min_date, max_date, min_amt, max_amt)
-    
+    cached_result = get_transactions_data(q, min_date, max_date, min_amt, max_amt)
+
+    # Create a new result dict to avoid mutating cached data
+    result = {
+        "transactions": list(cached_result.get("transactions", [])),  # Create a copy of the list
+        "balance": cached_result.get("balance"),
+        "allTransactions": cached_result.get("allTransactions", [])
+    }
+
     # Get credit card transactions
     try:
         conn = sqlite3.connect(DB_FILE)
@@ -1322,12 +1329,12 @@ def api_transactions():
                      ORDER BY date DESC, created_at DESC""")
         rows = c.fetchall()
         conn.close()
-        
+
         credit_card_txs = []
         for row in rows:
             tx_date = row[2]  # date field
             amount = row[1]  # amount (already in dollars)
-            
+
             # Apply filters if provided
             if min_date and tx_date < min_date:
                 continue
@@ -1339,7 +1346,7 @@ def api_transactions():
                 continue
             if q and q.lower() not in (row[3] or "").lower() and q.lower() not in (row[4] or "").lower():
                 continue
-            
+
             # Format as Crew transaction format
             credit_card_txs.append({
                 "id": f"cc_{row[0]}",  # Prefix to avoid conflicts
@@ -1353,17 +1360,19 @@ def api_transactions():
                 "merchant": row[3],
                 "isPending": bool(row[5])
             })
-        
+
         # Merge and sort by date
-        if "transactions" in result:
+        if result["transactions"]:
             all_txs = result["transactions"] + credit_card_txs
             # Handle None dates by treating them as empty strings for sorting
             all_txs.sort(key=lambda x: x.get("date") or "", reverse=True)
             result["transactions"] = all_txs
-    
+        elif credit_card_txs:
+            result["transactions"] = credit_card_txs
+
     except Exception as e:
         print(f"Error loading credit card transactions: {e}")
-    
+
     return jsonify(result)
 @app.route('/api/transaction/<path:tx_id>')
 def api_transaction_detail(tx_id): return jsonify(get_transaction_detail(tx_id))
@@ -1608,8 +1617,14 @@ def api_credit_card_status():
     try:
         conn = sqlite3.connect(DB_FILE)
         c = conn.cursor()
+
+        # Get first account for backward compatibility
         c.execute("SELECT account_id, account_name, pocket_id, created_at, provider FROM credit_card_config LIMIT 1")
         row = c.fetchone()
+
+        # Get ALL SimpleFin accounts for multi-account support
+        c.execute("SELECT account_id, account_name, pocket_id, created_at, provider FROM credit_card_config WHERE provider='simplefin'")
+        simplefin_rows = c.fetchall()
 
         # Check if SimpleFin access URL exists and is valid
         c.execute("SELECT access_url, is_valid FROM simplefin_config LIMIT 1")
@@ -1629,9 +1644,11 @@ def api_credit_card_status():
             "createdAt": None,
             "provider": None,
             "hasSimplefinAccessUrl": has_simplefin_access_url,
-            "simplefinTokenInvalid": simplefin_token_invalid
+            "simplefinTokenInvalid": simplefin_token_invalid,
+            "accounts": []  # NEW: Array of all SimpleFin accounts
         }
 
+        # Backward compatibility: populate single account fields
         if row:
             account_id = row[0]
             # Check if this is a real account or just a temp record from token claim
@@ -1645,6 +1662,22 @@ def api_credit_card_status():
                 result["pocketCreated"] = bool(row[2])
                 result["createdAt"] = row[3]
                 result["provider"] = row[4] if len(row) > 4 else "lunchflow"
+
+        # Populate accounts array for SimpleFin
+        for sf_row in simplefin_rows:
+            account_id = sf_row[0]
+            # Skip temp records
+            if account_id == 'temp_simplefin':
+                continue
+
+            result["accounts"].append({
+                "accountId": account_id,
+                "accountName": sf_row[1],
+                "pocketId": sf_row[2],
+                "createdAt": sf_row[3],
+                "provider": sf_row[4],
+                "pocketCreated": bool(sf_row[2])
+            })
 
         return jsonify(result)
     except Exception as e:
@@ -1882,11 +1915,11 @@ def check_credit_card_transactions():
         conn = sqlite3.connect(DB_FILE)
         c = conn.cursor()
 
-        # Get credit card account config with provider info
-        c.execute("SELECT account_id, pocket_id, provider FROM credit_card_config WHERE pocket_id IS NOT NULL LIMIT 1")
-        row = c.fetchone()
+        # Get ALL credit card account configs with provider info (no LIMIT 1)
+        c.execute("SELECT account_id, pocket_id, provider FROM credit_card_config WHERE pocket_id IS NOT NULL")
+        rows = c.fetchall()
 
-        if not row:
+        if not rows:
             # Debug: Check if there are any configs without pockets
             c.execute("SELECT account_id, provider FROM credit_card_config")
             all_configs = c.fetchall()
@@ -1895,42 +1928,45 @@ def check_credit_card_transactions():
             conn.close()
             return
 
-        account_id, pocket_id, provider = row
-        print(f"🔍 Checking transactions for {provider} account {account_id}, pocket {pocket_id}", flush=True)
+        # Get SimpleFin access URL once (shared across all SimpleFin accounts)
+        c.execute("SELECT access_url FROM simplefin_config LIMIT 1")
+        url_row = c.fetchone()
+        simplefin_access_url = url_row[0] if url_row and url_row[0] else None
 
-        # Handle based on provider
-        if provider == 'lunchflow':
-            api_key = os.environ.get("LUNCHFLOW_API_KEY")
-            if not api_key:
-                print("⚠️ LUNCHFLOW_API_KEY not set")
-                conn.close()
-                return
-            check_lunchflow_transactions(conn, c, account_id, pocket_id, api_key)
-        elif provider == 'simplefin':
-            # Check if enough time has passed since last SimpleFin sync (1 hour)
-            global _last_simplefin_sync
-            current_time = time.time()
-            time_since_last_sync = current_time - _last_simplefin_sync
+        # Process each account
+        global _last_simplefin_sync
+        for row in rows:
+            account_id, pocket_id, provider = row
+            print(f"🔍 Checking transactions for {provider} account {account_id}, pocket {pocket_id}", flush=True)
 
-            if time_since_last_sync < _simplefin_sync_interval:
-                minutes_remaining = int((_simplefin_sync_interval - time_since_last_sync) / 60)
-                print(f"⏰ SimpleFin sync skipped (next sync in {minutes_remaining} minutes)", flush=True)
-                conn.close()
-                return
+            # Handle based on provider
+            if provider == 'lunchflow':
+                api_key = os.environ.get("LUNCHFLOW_API_KEY")
+                if not api_key:
+                    print("⚠️ LUNCHFLOW_API_KEY not set")
+                    continue
+                check_lunchflow_transactions(conn, c, account_id, pocket_id, api_key)
 
-            # Get SimpleFin access URL from global config
-            c.execute("SELECT access_url FROM simplefin_config LIMIT 1")
-            url_row = c.fetchone()
-            if not url_row or not url_row[0]:
-                print(f"⚠️ SimpleFin access URL not found in simplefin_config", flush=True)
-                conn.close()
-                return
-            simplefin_access_url = url_row[0]
-            print(f"✅ Calling check_simplefin_transactions with access_url length: {len(simplefin_access_url)}", flush=True)
-            check_simplefin_transactions(conn, c, account_id, pocket_id, simplefin_access_url)
+            elif provider == 'simplefin':
+                # Check per-account rate limit
+                current_time = time.time()
+                last_sync = _last_simplefin_sync.get(account_id, 0)
+                time_since_last_sync = current_time - last_sync
 
-            # Update last sync time
-            _last_simplefin_sync = current_time
+                if time_since_last_sync < _simplefin_sync_interval:
+                    minutes_remaining = int((_simplefin_sync_interval - time_since_last_sync) / 60)
+                    print(f"⏰ SimpleFin sync skipped for account {account_id} (next sync in {minutes_remaining} minutes)", flush=True)
+                    continue
+
+                if not simplefin_access_url:
+                    print(f"⚠️ SimpleFin access URL not found in simplefin_config", flush=True)
+                    continue
+
+                print(f"✅ Calling check_simplefin_transactions for account {account_id}", flush=True)
+                check_simplefin_transactions(conn, c, account_id, pocket_id, simplefin_access_url)
+
+                # Update per-account last sync time
+                _last_simplefin_sync[account_id] = current_time
 
         conn.close()
     except Exception as e:
@@ -2030,10 +2066,14 @@ def check_lunchflow_transactions(conn, c, account_id, pocket_id, api_key):
     except Exception as e:
         print(f"Error checking LunchFlow transactions: {e}")
 
-def check_simplefin_transactions(conn, c, account_id, pocket_id, access_url):
-    """Check SimpleFin for new transactions"""
+def check_simplefin_transactions(conn, c, account_id, pocket_id, access_url, is_initial_sync=False):
+    """Check SimpleFin for new transactions
+
+    Args:
+        is_initial_sync: If True, don't move money for transactions (just store them)
+    """
     try:
-        print(f"🔍 check_simplefin_transactions: Fetching from {access_url[:30]}... for account {account_id}", flush=True)
+        print(f"🔍 check_simplefin_transactions: Fetching from {access_url[:30]}... for account {account_id} (initial={is_initial_sync})", flush=True)
 
         # Calculate date range: last 90 days to now
         import time
@@ -2142,7 +2182,8 @@ def check_simplefin_transactions(conn, c, account_id, pocket_id, access_url):
         print(f"✅ Committed {len(new_transactions)} new transactions to database")
 
         # Move money from Checking to Credit Card pocket for each new transaction
-        if new_transactions and pocket_id:
+        # Skip automatic money movement on initial sync to avoid huge transfers for historical transactions
+        if new_transactions and pocket_id and not is_initial_sync:
             headers_crew = get_crew_headers()
             if headers_crew:
                 # Get Checking subaccount ID
@@ -2160,6 +2201,8 @@ def check_simplefin_transactions(conn, c, account_id, pocket_id, access_url):
                         print(f"💸 Moving ${total_new_spending:.2f} from Checking to Credit Card pocket for {len(new_transactions)} new transaction(s)", flush=True)
                         move_money(checking_subaccount_id, pocket_id, str(total_new_spending), f"SimpleFin: {len(new_transactions)} new transaction(s)")
                         cache.clear()
+        elif new_transactions and is_initial_sync:
+            print(f"⏭️ Skipping automatic money movement for initial sync ({len(new_transactions)} historical transactions stored)", flush=True)
 
         # Update pocket balance
         if pocket_id:
@@ -2253,19 +2296,30 @@ def ensure_background_thread():
 
 @app.route('/api/lunchflow/transactions')
 def api_get_credit_card_transactions():
-    """Get credit card transactions that have been synced"""
+    """Get credit card transactions that have been synced (optionally filtered by accountId)"""
     try:
+        account_id = request.args.get('accountId')  # Optional filter
+
         conn = sqlite3.connect(DB_FILE)
         c = conn.cursor()
-        
-        c.execute("""SELECT transaction_id, amount, date, merchant, description, is_pending, created_at
-                     FROM credit_card_transactions
-                     ORDER BY date DESC, created_at DESC
-                     LIMIT 100""")
-        
+
+        if account_id:
+            # Filter by specific account
+            c.execute("""SELECT transaction_id, amount, date, merchant, description, is_pending, created_at
+                         FROM credit_card_transactions
+                         WHERE account_id = ?
+                         ORDER BY date DESC, created_at DESC
+                         LIMIT 100""", (account_id,))
+        else:
+            # Return all accounts
+            c.execute("""SELECT transaction_id, amount, date, merchant, description, is_pending, created_at
+                         FROM credit_card_transactions
+                         ORDER BY date DESC, created_at DESC
+                         LIMIT 100""")
+
         rows = c.fetchall()
         conn.close()
-        
+
         transactions = []
         for row in rows:
             transactions.append({
@@ -2278,7 +2332,7 @@ def api_get_credit_card_transactions():
                 "syncedAt": row[6],
                 "isCreditCard": True  # Flag to identify credit card transactions
             })
-        
+
         return jsonify({"transactions": transactions})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -2474,8 +2528,8 @@ def api_simplefin_set_credit_card():
         conn = sqlite3.connect(DB_FILE)
         c = conn.cursor()
 
-        # Insert or replace the account selection (access_url is stored globally in simplefin_config)
-        c.execute("""INSERT OR REPLACE INTO credit_card_config
+        # Insert or ignore the account selection (allows multiple accounts, access_url is stored globally in simplefin_config)
+        c.execute("""INSERT OR IGNORE INTO credit_card_config
                      (account_id, account_name, provider, created_at)
                      VALUES (?, ?, 'simplefin', CURRENT_TIMESTAMP)""",
                   (account_id, account_name))
@@ -2571,17 +2625,22 @@ def api_simplefin_create_pocket_with_balance():
         c.execute("UPDATE credit_card_config SET pocket_id = ? WHERE account_id = ? AND provider = 'simplefin'", (pocket_id, account_id))
         conn.commit()
 
-        # Immediately fetch transactions for the new account and reset timer
+        # Always fetch transactions immediately with is_initial_sync=True to avoid money transfers
+        # Whether balance was synced or not, we don't want to move money for historical transactions:
+        # - If synced: pocket already has correct balance from creation
+        # - If not synced: pocket at $0, avoid huge transfer
+        # Future hourly syncs will move money for NEW transactions only
         if access_url:
-            print(f"🔄 Immediately fetching transactions for newly added SimpleFin account {account_id}", flush=True)
+            print(f"🔄 Immediately fetching transactions for newly added SimpleFin account {account_id} (balance synced: {sync_balance})", flush=True)
             global _last_simplefin_sync
 
             # Fetch transactions
             try:
-                check_simplefin_transactions(conn, c, account_id, pocket_id, access_url)
-                # Reset the timer so hourly sync starts fresh
-                _last_simplefin_sync = time.time()
-                print(f"✅ Initial transaction sync complete, hourly timer reset", flush=True)
+                # Always use is_initial_sync=True on first sync to skip moving money for historical transactions
+                check_simplefin_transactions(conn, c, account_id, pocket_id, access_url, is_initial_sync=True)
+                # Reset the timer for this specific account so hourly sync starts fresh
+                _last_simplefin_sync[account_id] = time.time()
+                print(f"✅ Initial transaction sync complete for account {account_id}, hourly timer reset", flush=True)
             except Exception as e:
                 print(f"⚠️ Error fetching initial transactions: {e}", flush=True)
                 import traceback
@@ -2763,16 +2822,22 @@ def api_simplefin_change_account():
 def api_simplefin_stop_tracking():
     """Delete the SimpleFin credit card pocket and all config"""
     try:
+        data = request.json
+        account_id = data.get('accountId') if data else None
+
+        if not account_id:
+            return jsonify({"error": "accountId is required"}), 400
+
         conn = sqlite3.connect(DB_FILE)
         c = conn.cursor()
 
-        # Get current config
-        c.execute("SELECT account_id, pocket_id FROM credit_card_config WHERE pocket_id IS NOT NULL AND provider = 'simplefin' LIMIT 1")
+        # Get current config for the specific account
+        c.execute("SELECT account_id, pocket_id FROM credit_card_config WHERE account_id = ? AND pocket_id IS NOT NULL AND provider = 'simplefin'", (account_id,))
         row = c.fetchone()
 
         if not row:
             conn.close()
-            return jsonify({"error": "No SimpleFin credit card account configured"}), 400
+            return jsonify({"error": "No SimpleFin credit card account configured with that ID"}), 400
 
         account_id, pocket_id = row[0], row[1]
 

@@ -14,6 +14,10 @@ A modern web application that provides a comprehensive financial dashboard inter
 - **Savings Pockets**: Goal-based savings with progress tracking
 - **Money Transfers**: Move funds between accounts and pockets
 - **Trend Analysis**: Monthly spending and earning insights
+- **Credit Card Tracking**: Support for multiple credit card accounts via SimpleFin
+  - Automatic transaction syncing
+  - Balance management with dedicated pockets
+  - Per-account independent sync schedules
 
 ### 👨‍👩‍👧‍👦 Family Features
 - **Family Accounts**: Manage children and parent accounts
@@ -44,24 +48,32 @@ A modern web application that provides a comprehensive financial dashboard inter
 1. **Clone the repository**
    ```bash
    git clone <your-repo-url>
-   cd Docker_Project
+   cd SimpleCrew
    ```
 
-2. **Configure environment variables**
-   
+2. **Create your configuration file**
+
+   Copy the template and configure your credentials:
+   ```bash
+   cp docker-compose.yml.template docker-compose.yml
+   ```
+
    Edit `docker-compose.yml` and replace the placeholder tokens:
    ```yaml
    environment:
-     - BEARER_TOKEN=your_actual_bearer_token (example: Bearer asfsdf3asdf23rfasdf2asdfa2)
+     - BEARER_TOKEN=Bearer your_actual_crew_bearer_token_here
+     - LUNCHFLOW_API_KEY=your_lunchflow_api_key_here  # Optional
    ```
+
+   > **Note**: `docker-compose.yml` is in `.gitignore` so your credentials won't be committed to Git.
 
 3. **Start the application**
    ```bash
-   docker-compose up -d
+   docker-compose up -d --build
    ```
 
 4. **Access the application**
-   
+
    Open your browser and navigate to: `http://localhost:8080`
 
 ### Manual Setup (without Docker)
@@ -93,7 +105,8 @@ A modern web application that provides a comprehensive financial dashboard inter
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `BEARER_TOKEN` | API authentication bearer token | Yes |
+| `BEARER_TOKEN` | Crew API authentication bearer token | Yes |
+| `LUNCHFLOW_API_KEY` | LunchFlow API key for credit card integration | No (only if using LunchFlow) |
 | `DB_FILE` | SQLite database file path | No (defaults to `savings_data.db`) |
 
 ### API Configuration
@@ -108,18 +121,20 @@ The application connects to the Crew API at `https://api.trycrew.com/willow/grap
 ## Project Structure
 
 ```
-Docker_Project/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Python dependencies
-├── Dockerfile            # Docker container configuration
-├── docker-compose.yml    # Docker Compose setup
-├── data/                 # Database storage (created at runtime)
-│   └── savings_data.db   # SQLite database
-├── static/               # Static web assets
-│   ├── manifest.json     # PWA manifest
-│   └── sw.js            # Service worker
+SimpleCrew/
+├── app.py                      # Main Flask application
+├── requirements.txt            # Python dependencies
+├── Dockerfile                  # Docker container configuration
+├── docker-compose.yml.template # Template for Docker Compose setup
+├── docker-compose.yml          # Your local config (git-ignored)
+├── .gitignore                  # Git ignore rules
+├── data/                       # Database storage (git-ignored)
+│   └── savings_data.db         # SQLite database
+├── static/                     # Static web assets
+│   ├── manifest.json           # PWA manifest
+│   └── sw.js                   # Service worker
 └── templates/
-    └── index.html        # Main application template
+    └── index.html              # Main application template
 ```
 
 ## API Endpoints
@@ -263,11 +278,17 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Security Notes
 
-- Never commit API tokens to version control
-- Use environment variables for sensitive configuration
-- Regularly rotate API credentials
-- Implement proper input validation for user data
-- Consider implementing rate limiting for production use
+- **Never commit API tokens to version control**
+  - `docker-compose.yml` is in `.gitignore` to protect your credentials
+  - Use the provided `docker-compose.yml.template` as a starting point
+- **User data protection**
+  - The `data/` directory is excluded from Git to protect your database
+  - `.claude/` directory is excluded to protect your development sessions
+- **Best practices**
+  - Regularly rotate API credentials
+  - Implement proper input validation for user data
+  - Consider implementing rate limiting for production use
+  - Keep your Docker images updated
 
 ## Support
 
