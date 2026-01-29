@@ -111,3 +111,14 @@ function loadIntercom() {
         })
         .catch(err => console.error("Intercom fetch failed", err));
 }
+
+/**
+ * Open Intercom help widget
+ */
+function openIntercom() {
+    if (window.Intercom) {
+        window.Intercom('show');
+    } else {
+        console.log('Intercom not available');
+    }
+}

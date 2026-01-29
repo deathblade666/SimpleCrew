@@ -10,6 +10,54 @@
 // Note: All state variables (selectedProvider, simpleFinAccessUrl, etc.) are defined in state.js
 
 /**
+ * Show provider selection screen
+ */
+function showProviderSelection() {
+    document.getElementById('provider-selection').style.display = 'block';
+    document.getElementById('lunchflow-setup').style.display = 'none';
+    document.getElementById('simplefin-setup').style.display = 'none';
+    document.getElementById('simplefin-account-selection').style.display = 'none';
+}
+
+/**
+ * Select a credit card provider (lunchflow or simplefin)
+ * @param {string} provider - The provider name ('lunchflow' or 'simplefin')
+ */
+function selectProvider(provider) {
+    selectedProvider = provider;
+
+    // Hide provider selection
+    document.getElementById('provider-selection').style.display = 'none';
+
+    if (provider === 'lunchflow') {
+        // Show LunchFlow setup
+        document.getElementById('lunchflow-setup').style.display = 'block';
+        document.getElementById('simplefin-setup').style.display = 'none';
+        loadLunchFlowAccounts();
+    } else if (provider === 'simplefin') {
+        // Show SimpleFin setup
+        document.getElementById('simplefin-setup').style.display = 'block';
+        document.getElementById('lunchflow-setup').style.display = 'none';
+
+        // Fetch SimpleFin access URL and load accounts
+        fetch('/api/simplefin/get-access-url')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.accessUrl) {
+                    simpleFinAccessUrl = data.accessUrl;
+                    loadSimpleFinAccounts();
+                } else {
+                    appAlert('Error: SimpleFin access URL not found. Please reconnect SimpleFin.', 'Error');
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching SimpleFin access URL:', err);
+                appAlert('Error loading SimpleFin: ' + err.message, 'Error');
+            });
+    }
+}
+
+/**
  * Load credit card setup screen - determines what state to show
  */
 function loadCreditSetup() {
@@ -124,6 +172,30 @@ function loadCreditSetup() {
         .catch(err => {
             console.error('Error loading credit card status:', err);
         });
+}
+
+/**
+ * Show balance sync modal with optional balance
+ * @param {number|null} balance - The balance to display, or null if unavailable
+ */
+function showBalanceSyncModal(balance) {
+    const modal = document.getElementById('balance-sync-modal');
+    const balanceAmountEl = document.getElementById('balance-amount');
+
+    if (!modal || !balanceAmountEl) {
+        console.error('Balance sync modal elements not found');
+        return;
+    }
+
+    // Display balance or "Unavailable" message
+    if (balance !== null && balance !== undefined) {
+        balanceAmountEl.textContent = fmt(balance);
+    } else {
+        balanceAmountEl.textContent = 'Unavailable';
+    }
+
+    // Show the modal
+    modal.style.display = 'flex';
 }
 
 /**
@@ -927,4 +999,35 @@ function removeAccount(accountId) {
             appAlert('Error removing account: ' + err.message, 'Error');
         });
     });
+}
+
+/**
+ * View transactions for a specific credit card account
+ * @param {string} accountId - The account ID to view transactions for
+ */
+function viewAccountTransactions(accountId) {
+    // Switch to Activity tab
+    if (typeof switchTab === 'function') {
+        switchTab('activity');
+    }
+
+    // Scroll to transactions view
+    const activityView = document.getElementById('view-activity');
+    if (activityView) {
+        activityView.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Set search filter to account ID
+    const searchInput = document.getElementById('search-input-box');
+    if (searchInput) {
+        searchInput.value = accountId;
+        if (filterState) {
+            filterState.q = accountId;
+        }
+
+        // Trigger transaction reload with filter
+        if (typeof reloadTx === 'function') {
+            reloadTx();
+        }
+    }
 }

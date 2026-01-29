@@ -30,6 +30,9 @@
 <script src="/static/js/utils/helpers.js"></script>
 <script src="/static/js/state.js"></script>
 
+<!-- UI layer (dialogs must load before API layer for appConfirm) -->
+<script src="/static/js/ui/dialogs.js"></script>
+
 <!-- API layer -->
 <script src="/static/js/api/cards.js"></script>
 <script src="/static/js/api/goals.js"></script>
@@ -38,9 +41,8 @@
 <script src="/static/js/api/family.js"></script>
 <script src="/static/js/api/credit.js"></script>
 
-<!-- UI layer -->
+<!-- UI layer (continued) -->
 <script src="/static/js/ui/navigation.js"></script>
-<script src="/static/js/ui/dialogs.js"></script>
 <script src="/static/js/ui/modals.js"></script>
 <script src="/static/js/ui/filters.js"></script>
 <script src="/static/js/ui/rendering.js"></script>

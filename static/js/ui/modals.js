@@ -52,6 +52,70 @@ function closeMoveModal() {
     document.getElementById('move-modal').style.display = 'none';
 }
 
+/**
+ * Executes the money transfer from the move money modal
+ */
+function executeTransfer() {
+    const fromId = document.getElementById('move-from').value;
+    const toId = document.getElementById('move-to').value;
+    const amount = document.getElementById('move-amount').value;
+    const note = document.getElementById('move-note').value;
+    const messageEl = document.getElementById('move-message');
+
+    // Validation
+    if (!fromId || !toId) {
+        messageEl.innerHTML = '<div style="color:red; margin-bottom:10px;">Please select accounts</div>';
+        return;
+    }
+
+    if (!amount || parseFloat(amount) <= 0) {
+        messageEl.innerHTML = '<div style="color:red; margin-bottom:10px;">Please enter a valid amount</div>';
+        return;
+    }
+
+    if (fromId === toId) {
+        messageEl.innerHTML = '<div style="color:red; margin-bottom:10px;">Cannot transfer to the same account</div>';
+        return;
+    }
+
+    // Check if source account has enough balance
+    const fromAccount = moveMoneyAccounts.find(acc => acc.id === fromId);
+    if (fromAccount && parseFloat(amount) > fromAccount.balance) {
+        messageEl.innerHTML = '<div style="color:red; margin-bottom:10px;">Insufficient funds in source account</div>';
+        return;
+    }
+
+    messageEl.innerHTML = '<div style="color:#0093E9;">Processing transfer...</div>';
+
+    // Execute transfer
+    fetch('/api/move-money', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fromId, toId, amount, note })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            messageEl.innerHTML = `<div style="color:red; margin-bottom:10px;">Error: ${data.error}</div>`;
+        } else {
+            messageEl.innerHTML = '<div style="color:#63BB67; margin-bottom:10px;">✓ Transfer complete!</div>';
+            setTimeout(() => {
+                closeMoveModal();
+                initBalances();
+                reloadTx();
+                loadSidebarPockets(true);
+
+                // Refresh current view if needed
+                if (document.getElementById('view-expenses').classList.contains('active')) loadExpenses(true);
+                if (document.getElementById('view-goals').classList.contains('active')) loadGoals(true);
+            }, 1000);
+        }
+    })
+    .catch(error => {
+        messageEl.innerHTML = `<div style="color:red; margin-bottom:10px;">Network error: ${error.message}</div>`;
+    });
+}
+
 // --- BILL MODAL ---
 
 /**
@@ -390,35 +454,58 @@ function openGoalDetailList(index) {
     `;
 
     // Fetch transactions for this pocket
-    fetch('/api/transactions?pageSize=100').then(res => res.json()).then(data => {
-        const listContainer = document.getElementById('pocket-tx-list');
-        if(data.error) {
-            listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:red;">Error loading</div>';
-            return;
-        }
+    fetch('/api/transactions?pageSize=100')
+        .then(res => res.json())
+        .then(data => {
+            const listContainer = document.getElementById('pocket-tx-list');
 
-        const pocketTxs = data.transactions.filter(t => t.subaccountId === g.id);
+            if (!listContainer) {
+                console.error('pocket-tx-list element not found');
+                return;
+            }
 
-        if(pocketTxs.length === 0) {
-            listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">No recent activity</div>';
-        } else {
-            let html = '';
-            pocketTxs.forEach(tx => {
-                const date = new Date(tx.date).toLocaleDateString(undefined, {month:'short', day:'numeric'});
-                const amtClass = tx.amount > 0 ? 'tx-pos' : 'tx-neg';
-                const sign = tx.amount > 0 ? '+' : '';
+            if (data.error) {
+                console.error('API error:', data.error);
+                listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:red;">Error loading transactions</div>';
+                return;
+            }
 
-                html += `
-                <div class="pocket-tx-row">
-                    <div class="pocket-tx-date">${date}</div>
-                    <div class="pocket-tx-title">${tx.title}</div>
-                    <div class="pocket-tx-amt ${amtClass}">${sign}${fmt(tx.amount)}</div>
-                </div>
-                `;
-            });
-            listContainer.innerHTML = html;
-        }
-    });
+            if (!data.transactions || !Array.isArray(data.transactions)) {
+                console.error('Invalid transactions data:', data);
+                listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:red;">Invalid data format</div>';
+                return;
+            }
+
+            const pocketTxs = data.transactions.filter(t => t.subaccountId === g.id);
+            console.log(`Found ${pocketTxs.length} transactions for pocket ${g.name} (ID: ${g.id})`);
+
+            if (pocketTxs.length === 0) {
+                listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">No recent activity</div>';
+            } else {
+                let html = '';
+                pocketTxs.forEach(tx => {
+                    const date = new Date(tx.date).toLocaleDateString(undefined, {month:'short', day:'numeric'});
+                    const amtClass = tx.amount > 0 ? 'tx-pos' : 'tx-neg';
+                    const sign = tx.amount > 0 ? '+' : '';
+
+                    html += `
+                    <div class="pocket-tx-row">
+                        <div class="pocket-tx-date">${date}</div>
+                        <div class="pocket-tx-title">${tx.title}</div>
+                        <div class="pocket-tx-amt ${amtClass}">${sign}${fmt(Math.abs(tx.amount))}</div>
+                    </div>
+                    `;
+                });
+                listContainer.innerHTML = html;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching transactions:', error);
+            const listContainer = document.getElementById('pocket-tx-list');
+            if (listContainer) {
+                listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:red;">Error loading transactions</div>';
+            }
+        });
 }
 
 /**

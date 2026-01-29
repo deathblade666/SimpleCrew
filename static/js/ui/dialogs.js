@@ -20,7 +20,7 @@ function showAppDialog(title, message, buttons) {
     if (buttons && buttons.length > 0) {
         buttons.forEach((btn, index) => {
             const button = document.createElement('button');
-            button.className = \`app-dialog-button \${btn.class || 'app-dialog-button-secondary'}\`;
+            button.className = `app-dialog-button ${btn.class || 'app-dialog-button-secondary'}`;
             button.textContent = btn.text || 'OK';
             button.onclick = (e) => {
                 e.stopPropagation();
