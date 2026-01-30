@@ -3,8 +3,8 @@
  * @description Mobile-specific styles and media queries
  */
 
-        /* --- MOBILE ADAPTATIONS --- */
-        @media (max-width: 768px) {
+/* --- MOBILE ADAPTATIONS --- */
+@media (max-width: 768px) {
             :root {
                 --nav-height: 60px;
                 --bottom-nav-height: calc(60px + env(safe-area-inset-bottom)); /* Add safe area */
@@ -189,6 +189,7 @@
             /* Hide the big info header on mobile since we moved it to top nav */
             .info-header {
                 display: none;
+                visibility: hidden;
             }
 
             /* CONTROLS */
@@ -268,7 +269,12 @@
             }
 
             /* REMOVE SIDEBAR ON MOBILE */
-            .sidebar-column { display: none !important; }
+            .sidebar-column {
+                display: none;
+                visibility: hidden;
+                width: 0;
+                overflow: hidden;
+            }
 
             /* MODALS */
             .modal-content {
@@ -279,7 +285,6 @@
             .modal-body {
                 padding: 20px;
             }
-        }
 
         /* NEW STYLES FOR MOBILE STS DROPDOWN */
         .mobile-sts-dropdown {
@@ -312,9 +317,10 @@
         .mb-math-label { color: #999; font-weight: 500; font-size: 11px; text-transform: uppercase; margin-left: 10px; }
         .header-arrow { font-size: 10px; margin-left: 4px; transition: transform 0.2s; display: inline-block; }
         .mobile-center-header.active .header-arrow { transform: rotate(180deg); }
+}
 
-        /* Desktop specific hide */
-        @media (min-width: 769px) {
+/* Desktop specific hide */
+@media (min-width: 769px) {
             .mobile-bottom-nav { display: none; }
             .mobile-center-header { display: none; }
         }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'simple-finance-v2';
+const CACHE_NAME = 'simple-finance-v4';
 const urlsToCache = [
     '/',
     '/manifest.json',
