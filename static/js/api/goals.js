@@ -38,18 +38,23 @@ function loadGoals(forceRefresh = false) {
             groups[g.id] = { id: g.id, name: g.name, pockets: [], totalBalance: 0, totalTarget: 0 };
         });
 
-        // Filter out credit card pockets unless toggle is on
-        const regularGoals = showCreditCardPockets ? data.goals : data.goals.filter(g => !g.isCreditCard);
+        // First pass: calculate group totals from ALL pockets (including credit cards)
+        data.goals.forEach((g, index) => {
+            g.originalIndex = index;
+            if (g.groupId && groups[g.groupId]) {
+                groups[g.groupId].totalBalance += g.balance;
+                // For credit card pockets, add balance to target total; for regular pockets, add their goal target
+                const targetValue = g.isCreditCard ? g.balance : g.target;
+                groups[g.groupId].totalTarget += targetValue;
+            }
+        });
 
-        regularGoals.forEach((g, index) => {
-            // Attach original index for onClick handlers (using original goals array for indexing)
-            const originalIndex = data.goals.findIndex(goal => goal.id === g.id);
-            g.originalIndex = originalIndex >= 0 ? originalIndex : index;
+        // Second pass: populate pockets arrays and ungrouped (respecting credit card visibility toggle)
+        const visibleGoals = showCreditCardPockets ? data.goals : data.goals.filter(g => !g.isCreditCard);
 
+        visibleGoals.forEach((g) => {
             if (g.groupId && groups[g.groupId]) {
                 groups[g.groupId].pockets.push(g);
-                groups[g.groupId].totalBalance += g.balance;
-                groups[g.groupId].totalTarget += g.target;
             } else {
                 ungrouped.push(g);
             }
