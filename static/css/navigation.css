@@ -20,7 +20,7 @@
 .nav-left, .nav-right { display: flex; align-items: center; gap: 30px; }
 
 .logo { margin-right: 15px; display: flex; align-items: center; }
-.logo img { height: 22px; display: block; }
+.logo img { height: 28px; width: auto; display: block; }
 
 .nav-link {
     text-decoration: none;

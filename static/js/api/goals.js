@@ -35,33 +35,41 @@ function loadGoals(forceRefresh = false) {
 
         // Initialize groups structure from defined groups
         allGroups.forEach(g => {
-            groups[g.id] = { id: g.id, name: g.name, pockets: [], totalBalance: 0, totalTarget: 0 };
+            groups[g.id] = { id: g.id, name: g.name, pockets: [], totalBalance: 0, totalTarget: 0, hasOnlyCreditCards: true };
         });
 
-        // First pass: calculate group totals from ALL pockets (including credit cards)
+        // First pass: assign original index and check if groups have non-credit-card pockets
         data.goals.forEach((g, index) => {
             g.originalIndex = index;
-            if (g.groupId && groups[g.groupId]) {
-                groups[g.groupId].totalBalance += g.balance;
-                // For credit card pockets, add balance to target total; for regular pockets, add their goal target
-                const targetValue = g.isCreditCard ? g.balance : g.target;
-                groups[g.groupId].totalTarget += targetValue;
+            if (g.groupId && groups[g.groupId] && !g.isCreditCard) {
+                groups[g.groupId].hasOnlyCreditCards = false;
             }
         });
 
-        // Second pass: populate pockets arrays and ungrouped (respecting credit card visibility toggle)
-        const visibleGoals = showCreditCardPockets ? data.goals : data.goals.filter(g => !g.isCreditCard);
+        // Second pass: calculate totals and populate pockets based on visibility
+        data.goals.forEach((g) => {
+            const isVisible = showCreditCardPockets || !g.isCreditCard;
 
-        visibleGoals.forEach((g) => {
             if (g.groupId && groups[g.groupId]) {
-                groups[g.groupId].pockets.push(g);
-            } else {
+                // Only add to totals if visible
+                if (isVisible) {
+                    groups[g.groupId].totalBalance += g.balance;
+                    const targetValue = g.isCreditCard ? g.balance : g.target;
+                    groups[g.groupId].totalTarget += targetValue;
+                    groups[g.groupId].pockets.push(g);
+                }
+            } else if (isVisible) {
                 ungrouped.push(g);
             }
         });
 
         // 2. Render Groups (Modern Card Style)
         Object.values(groups).forEach(group => {
+            // Skip groups that only have credit card pockets when CC toggle is off
+            if (!showCreditCardPockets && group.hasOnlyCreditCards) {
+                return;
+            }
+
             const groupId = 'grp-' + group.id;
 
             // Consistent color based on name
